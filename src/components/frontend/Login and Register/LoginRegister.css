@@ -129,6 +129,8 @@ img{
     color: #000;
  }
  .signin{
+    display: block;
+    justify-content: center;
     text-align: center;
     font-size: small;
     margin-top: 25px;

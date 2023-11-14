@@ -8,7 +8,7 @@ function Register() {
   //To navigate the user
   const navigateTo = useNavigate();
   const loginPage = () => {
-    navigateTo("/");
+    navigateTo("/login");
   };
   // UseState to hold our Inputs from users
   const [id_number, setIdnumber] = useState("");
@@ -19,23 +19,23 @@ function Register() {
   const [data, setData] = useState([]);
   // MODAL SHOW
   // To show the Register Message
-  const [showRegister, setRegister] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   // To show the Email Validation Message
-  const [showEmailValid, setEmailValid] = useState(false);
+  const [showEmailModal, setModalEmailModal] = useState(false);
   // To show ID number Validation Message
-  const [showidnumberValid, setIdnmberValid] = useState(false);
+  const [showIdNumberModal, setShowIdNumberModal] = useState(false);
   // To show password Validation Message
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   // To show ID number Validation Message
-  const [showSuccessful, setSuccessful] = useState(false);
+  const [showSuccessfulModal, setShowSuccessful] = useState(false);
   // To hide the Modal Message
   const handleHide = () => {
     console.log("Register is about to be hidden");
-    setRegister(false);
-    setEmailValid(false);
-    setIdnmberValid(false);
-    setSuccessful(false);
-    setShowPassword(false);
+    setShowRegisterModal(false);
+    setModalEmailModal(false);
+    setShowIdNumberModal(false);
+    setShowSuccessful(false);
+    setShowPasswordModal(false);
   };
   // END mODAL SHOW
   // This is to validate Email
@@ -55,72 +55,53 @@ function Register() {
     return idPattern.test(id_number);
   };
   //Onclick to get what the data that the user entered
-  const createUser = (e) => {
+  const handleRegistration = (e) => {
     e.preventDefault();
-    const validRole = role;
-    const validEmail = email;
-    const validStudentIdnumber = id_number;
-    const validTeacherIdnumber = id_number;
-    if (validRole === "student") {
-      if (!validateStudentIdnumber(validStudentIdnumber)) {
-        setIdnmberValid(true);
-      } else if (!validateEmail(validEmail)) {
-        setEmailValid(true);
-      } else {
-        axios
-          .post("http://localhost:8081/register", {
-            Idnumber: id_number,
-            Username: username,
-            Email: email,
-            Password: password,
-            Role: role,
-          })
-          .then((res) => {
-            setData(res);
-            if (res.data.password) {
-              setShowPassword(true);
-            } else {
-              setSuccessful(true);
-              //To clear the field after the input
-              setIdnumber("");
-              setUsername("");
-              setEmail("");
-              setPassword("");
-            }
-          })
-          .catch(() => {
-            setRegister(true);
-          });
-      }
+    //Validte based on role
+    let isValidIdNumber = true;
+    if (role === "student") {
+      isValidIdNumber = validateStudentIdnumber(id_number);
+    } else if (role === "teacher") {
+      isValidIdNumber = validateTeacherIdnumber(id_number);
     }
-    if (validRole === "teacher") {
-      if (!validateTeacherIdnumber(validTeacherIdnumber)) {
-        setIdnmberValid(true);
-      } else if (!validateEmail(validEmail)) {
-        setEmailValid(true);
-      } else {
-        axios
-          .post("http://localhost:8081/register", {
-            Idnumber: id_number,
-            Username: username,
-            Email: email,
-            Password: password,
-            Role: role,
-          })
-          .then(() => {
-            setSuccessful(true);
-            //To clear the field after the input
+    // Validate email
+    const isValidEmail = validateEmail(email);
+
+    if (!isValidIdNumber) {
+      setShowIdNumberModal(true);
+    } else if (!isValidEmail) {
+      setModalEmailModal(true);
+    } else {
+      axios
+        .post("http://localhost:8081/register", {
+          Idnumber: id_number,
+          Username: username,
+          Email: email,
+          Password: password,
+          Role: role,
+        })
+        .then((res) => {
+          setData(res);
+          if (res.data.error) {
+            setShowPasswordModal(true);
+            // Usage in createUser function
+          } else {
+            setShowSuccessful(true);
+            // To clear the field after the input
             setIdnumber("");
             setUsername("");
             setEmail("");
             setPassword("");
-          })
-          .catch(() => {
-            setRegister(true);
-          });
-      }
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            setShowRegisterModal(true);
+          }
+        });
     }
   };
+
   return (
     <>
       <div className="wrapper">
@@ -128,7 +109,7 @@ function Register() {
           <div className="row">
             {/* This is to show the error message and success message */}
             {/* Account Successfully Registered */}
-            <Modal show={showSuccessful} onHide={handleHide}>
+            <Modal show={showSuccessfulModal} onHide={handleHide}>
               <Modal.Header>
                 <Modal.Title>Register</Modal.Title>
               </Modal.Header>
@@ -140,7 +121,7 @@ function Register() {
               </Modal.Footer>
             </Modal>
             {/* Account Password Registered */}
-            <Modal show={showPassword} onHide={handleHide}>
+            <Modal show={showPasswordModal} onHide={handleHide}>
               <Modal.Header>
                 <Modal.Title>Password</Modal.Title>
               </Modal.Header>
@@ -153,7 +134,7 @@ function Register() {
               </Modal.Footer>
             </Modal>
             {/* Register Message */}
-            <Modal show={showRegister} onHide={handleHide}>
+            <Modal show={showRegisterModal} onHide={handleHide}>
               <Modal.Header>
                 <Modal.Title>Register</Modal.Title>
               </Modal.Header>
@@ -169,12 +150,12 @@ function Register() {
               </Modal.Footer>
             </Modal>
             {/* Email validation */}
-            <Modal show={showEmailValid} onHide={handleHide}>
+            <Modal show={showEmailModal} onHide={handleHide}>
               <Modal.Header>
                 <Modal.Title>Email</Modal.Title>
               </Modal.Header>
-              <Modal.Body>Email is Invalid!</Modal.Body>
-              <Modal.Body>Unable to register.</Modal.Body>
+              <Modal.Body>Email is Invalid! Unable to register</Modal.Body>
+              <Modal.Body>Please try again later.</Modal.Body>
               <Modal.Footer>
                 <Button variant="primary" onClick={loginPage}>
                   Ok
@@ -182,12 +163,12 @@ function Register() {
               </Modal.Footer>
             </Modal>
             {/* ID number validation */}
-            <Modal show={showidnumberValid} onHide={handleHide}>
+            <Modal show={showIdNumberModal} onHide={handleHide}>
               <Modal.Header>
                 <Modal.Title>ID Number</Modal.Title>
               </Modal.Header>
-              <Modal.Body>ID number is Invalid!</Modal.Body>
-              <Modal.Body>Unable to register.</Modal.Body>
+              <Modal.Body>ID number is Invalid! Unable to register.</Modal.Body>
+              <Modal.Body>Please try again later.</Modal.Body>
               <Modal.Footer>
                 <Button variant="primary" onClick={loginPage}>
                   Ok
@@ -204,7 +185,7 @@ function Register() {
             <div className="col-md-6 right">
               <div className="input-box">
                 <h4 className="pb-5 text-center">Register account</h4>
-                <form onSubmit={createUser}>
+                <form onSubmit={handleRegistration}>
                   {/* ID Number Input */}
                   <div className="input-field">
                     <input
@@ -316,8 +297,14 @@ function Register() {
                   </div>
                   <div className="signin">
                     <span>
-                      Already have an account? <Link to="/">Login in here</Link>
+                      Already have an account?{" "}
+                      <Link to="/login">Login in here</Link>
                     </span>
+                    <div className="signin">
+                      <span>
+                        <Link to="/">exit</Link>
+                      </span>
+                    </div>
                   </div>
                 </form>
               </div>

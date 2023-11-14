@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
 import "./Admin.css";
 
-function AdminDashboard() {
+function Quizzes() {
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
 
   const handleStudent = () => {
@@ -108,4 +108,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default Quizzes;

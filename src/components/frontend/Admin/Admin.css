@@ -5,6 +5,9 @@
 .dash_admin{
     font-family: Arial, Helvetica, sans-serif;
     color:  white;
+    background-color: #050128;
+    width: 500px;
+    margin-left: 225px;
   }
   .admin_container{
     width: 1358px;
@@ -16,6 +19,10 @@
     padding: 10px;
     color: #06003d;
   }
+  .custom_data{
+    height: 100px;
+  }
+
   .top-left-button {
     position: absolute;
     top: 20px;
@@ -23,7 +30,6 @@
     transform: translate(0, 0);
   }
   .courseButton{
-    color: darkblue;
   font-size: 20px;
     font-family: 'Helvetica Neue, Helvetica, Arial, sans-serif';
   }
@@ -32,14 +38,18 @@
     margin-right: 10px;
     background-image: url('icons/profile1.jpg');
   }
-
+.course_container{
+  margin-left: 220px;
+  width: 1000px;
+}
   .custom-AdminInfo{
     border-right: 2px solid #06003d;
     color: WHITE;
-    background: linear-gradient(to bottom, #3e88dd, #0a0064);
+    height: 100%;
+    background: linear-gradient(to bottom, #143f71, #050128);
     margin: 0;
     padding: 0;
-  
+    position: fixed;
   }
   .logoutBtnAdmin{
     margin-top: 150px;

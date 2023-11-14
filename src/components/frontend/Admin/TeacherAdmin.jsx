@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
 import "./Admin.css";
 
-function AdminDashboard() {
+function TeacherAdmin() {
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
 
   const handleStudent = () => {
@@ -48,10 +48,10 @@ function AdminDashboard() {
               >
                 Teacher
               </Link>
-              {/* To Add Course */}
               <Link className=" btn btn-outline-warning mb-2" to="/quizzes">
                 Quizzes
               </Link>
+              {/* To Add Course */}
               <Link className=" btn btn-outline-warning" to="/addcourse">
                 Courses
               </Link>
@@ -82,7 +82,7 @@ function AdminDashboard() {
           {/* Admin Dashboard */}
           <div className="col-10 text-center dash_admin">
             <div className="col-10 d-flex align-items-center welcome">
-              <h1 className="pt-4 ">Welcome to Dashboard!</h1>
+              <h1 className="pt-4 ">Teacher</h1>
             </div>
             <div className="d-flex align-items-center justify-content-center">
               <div className="custom_data col bg-warning rounded p-2">
@@ -108,4 +108,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default TeacherAdmin;

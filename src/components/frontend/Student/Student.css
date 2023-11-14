@@ -12,6 +12,9 @@
   margin-top: 110px;
   color: white;
 }
+.lnu_materials{
+  margin-top: 150px;
+}
 .custom_studentInfo{
   display: flex;
   height: 100%;
@@ -64,9 +67,11 @@ font-size: 20px;
   margin-top: 150px;
 }
 .logout_student{
-  margin-top: 200px;
+  margin-top: 250px;
 }
-
+.course_container{
+  margin-left: 550px;
+}
 .confirmation-content{
   background: linear-gradient(to bottom, #3e88dd, #0a0064);
   border-radius: 10px;

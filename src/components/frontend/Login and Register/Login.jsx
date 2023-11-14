@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./LoginRegister.css";
 import axios from "axios";
-import CryptoJS from "crypto-js";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
@@ -10,10 +9,11 @@ function Login() {
   // To show the message to the users
   const [role, setRole] = useState("student");
   const [data, setData] = useState([]);
-  const [showloginValid, setLoginValid] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
+
   const handleHide = () => {
-    setLoginValid(false);
+    setShowLoginModal(false);
   };
   // To navigate from other pages
   //UseState to store the inputs
@@ -21,61 +21,58 @@ function Login() {
   const [loginPassword, setLoginPassword] = useState("");
 
   //On click to get what the user enteredf
-  const loginUser = async (event) => {
-    event.preventDefault();
-
-    try {
-      axios
-        .post("http://localhost:8081/login", {
+  const loginUser = async (e) => {
+    e.preventDefault();
+    if (loginIdnumber === "" || loginPassword === "") {
+      setShowLoginModal(true);
+    } else {
+      try {
+        // Rest of the logic remains the same
+        const res = await axios.post("http://localhost:8081/login", {
           LoginIdnumber: loginIdnumber,
           LoginPassword: loginPassword,
           LoginRole: role,
-        })
-        .then((res) => {
-          const storedPassword = CryptoJS.SHA256(loginPassword).toString(
-            CryptoJS.enc.Hex
-          );
-          setData(res);
-          if (
-            res.data.message ||
-            loginIdnumber === "" ||
-            loginPassword === ""
-          ) {
-            setLoginValid(true);
-          } else if (res.data.role === role) {
-            // Passwords match, proceed with role-based navigation
-            if (res.data.role === "student") {
-              navigate("/studentDash");
-            } else if (res.data.role === "teacher") {
-              navigate("/teacherDash");
-            } else if (res.data.password === storedPassword) {
-              navigate("/admin");
-            } else {
-              console.log("error password dont match");
-              // Passwords do not match
-            }
-          }
-          // Add additional logic here if needed
-        })
-        .catch(() => {
-          setLoginValid(true);
         });
-    } catch (error) {
-      console.error("Error hashing password:", error);
+        setData(res);
+        if (res.data.role) {
+          switch (res.data.role) {
+            case "student":
+              navigate("/studentDash");
+              break;
+            case "teacher":
+              navigate("/teacherDash");
+              break;
+            default:
+              setShowLoginModal(true);
+          }
+        } else if (
+          res.data.password === storedPassword &&
+          loginIdnumber === "2100880"
+        ) {
+          navigate("/admin");
+        } else {
+          console.log("Error: Passwords don't match");
+        }
+      } catch (error) {
+        setShowLoginModal(true);
+      }
     }
   };
+
   return (
     <>
       <div className="wrapper">
         <div className="container main">
           <div className="row">
             {/* Account dont exist */}
-            <Modal show={showloginValid} onHide={handleHide}>
+            <Modal show={showLoginModal} onHide={handleHide}>
               <Modal.Header>
-                <Modal.Title>Account In</Modal.Title>
+                <Modal.Title>Account Invalid</Modal.Title>
               </Modal.Header>
-              <Modal.Body>Account don't exist!</Modal.Body>
-              <Modal.Body>Unable to login.</Modal.Body>
+              <Modal.Body>Account don't exist! Unable to login.</Modal.Body>
+              <Modal.Body>
+                Make sure you entered a correct Password or ID number
+              </Modal.Body>
               <Modal.Footer>
                 <Button variant="primary" onClick={handleHide}>
                   Ok
@@ -183,6 +180,11 @@ function Login() {
                     <span>
                       Don't have an account?{" "}
                       <Link to="/register">Register in here</Link>
+                    </span>
+                  </div>
+                  <div className="signin">
+                    <span>
+                      <Link to="/">exit</Link>
                     </span>
                   </div>
                 </form>

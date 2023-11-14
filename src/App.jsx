@@ -47,9 +47,15 @@ import UploadAd from "./components/frontend/Admin/UploadAd";
 import JavaDashAdmin from "./components/frontend/Admin/JavaDashAdmin";
 import PyDashAdmin from "./components/frontend/Admin/PyDashAdmin";
 import LNUMaterialsAdmin from "./components/frontend/Admin/LNUMaterialsAdmin";
+import AddCourse from "./components/frontend/Admin/AddCourse";
+import StudentAdmin from "./components/frontend/Admin/StudentAdmin";
+import TeacherAdmin from "./components/frontend/Admin/TeacherAdmin";
+import Quizzes from "./components/frontend/Admin/QuizzesAdmin";
 //Upload page
 import Upload from "./components/frontend/Teacher/Upload";
 import Download from "./components/frontend/Teacher/Download";
+// Landing Page
+import LandingPage from "./components/frontend/LandingPage/LandingPage";
 function App() {
   return (
     <>
@@ -60,7 +66,7 @@ function App() {
           </Route>
           {/* This is the route for the main pages */}
           {/* Login Page */}
-          <Route path="/" element={<Login />}>
+          <Route path="/login" element={<Login />}>
             Login
           </Route>
           <Route path="/register" element={<Register />}>
@@ -76,6 +82,9 @@ function App() {
           <Route path="/studentAd" element={<Student />}>
             StudentAdmin
           </Route>
+          <Route path="/addcourse" element={<AddCourse />}>
+            Add Course
+          </Route>
           <Route path="/uploadAd" element={<UploadAd />}>
             UploadAdmin
           </Route>
@@ -83,10 +92,19 @@ function App() {
             Java Admin
           </Route>
           <Route path="pythonDashAdmin" element={<PyDashAdmin />}>
-            Python Admin
+            s Python Admin
           </Route>
           <Route path="lnuMaterialsAdmin" element={<LNUMaterialsAdmin />}>
             LNU Materials Admin
+          </Route>
+          <Route path="/studentAdmin" element={<StudentAdmin />}>
+            Student Page
+          </Route>
+          <Route path="/teacherAdmin" element={<TeacherAdmin />}>
+            Teacher Page
+          </Route>
+          <Route path="/quizzes" element={<Quizzes />}>
+            Quizzes Page
           </Route>
 
           {/* End Admin Page */}
@@ -187,6 +205,12 @@ function App() {
           <Route path="/profile" element={<Profile />}>
             Profile
           </Route>
+
+          {/* Landing Page */}
+          <Route path="/" element={<LandingPage />}>
+            Landing Page
+          </Route>
+          {/* End of Landing Page */}
         </Routes>
       </BrowserRouter>
     </>

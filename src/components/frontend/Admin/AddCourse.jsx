@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
 import "./Admin.css";
 
-function AdminDashboard() {
+function AddCourse() {
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
 
   const handleStudent = () => {
@@ -80,26 +81,67 @@ function AdminDashboard() {
           </div>
 
           {/* Admin Dashboard */}
-          <div className="col-10 text-center dash_admin">
-            <div className="col-10 d-flex align-items-center welcome">
-              <h1 className="pt-4 ">Welcome to Dashboard!</h1>
+          <div className="text-center dash_admin">
+            <div className="align-items-center welcome">
+              <h1 className="pt-4 ">Add Topic</h1>
             </div>
-            <div className="d-flex align-items-center justify-content-center">
-              <div className="custom_data col bg-warning rounded p-2">
-                <h5>Students</h5>
-                <p>Total Students 20</p>
-              </div>
-              <div className="custom_data col bg-primary ms-2 rounded p-2">
-                {" "}
-                <h5>Teachers</h5>
-                <p>Total Teachers 23</p>
-              </div>
-              <div className="custom_data col bg-success ms-2 rounded p-2">
-                <h5>Quizzes</h5>
-              </div>
-              <div className="custom_data col bg-dark ms-2 rounded p-2">
-                <h5>Courses</h5>
-              </div>
+            <div className="col-10 bg-primary course_container">
+              <table className="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Courses</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="d-flex justify-content-between">
+                      Java Introduction
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                    <td className="d-flex justify-content-between">
+                      Java Operators
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                    <td className="d-flex justify-content-between">
+                      Java Data Types
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <Link className="btn btn-outline-warning">Add</Link>
+            </div>
+            <div className="col-10 bg-primary quiz_container">
+              <table className="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Courses</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="d-flex justify-content-between">
+                      Java Introduction
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                    <td className="d-flex justify-content-between">
+                      Java Operators
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                    <td className="d-flex justify-content-between">
+                      Java Data Types
+                      <button className="btn btn-success">Edit</button>
+                      <button className="btn btn-danger">delete</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <Link className="btn btn-outline-warning">Add</Link>
             </div>
           </div>
         </div>
@@ -108,4 +150,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default AddCourse;

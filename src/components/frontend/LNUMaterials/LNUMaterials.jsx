@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 const styles = {
@@ -53,6 +54,20 @@ const styles = {
 function LNUMaterials() {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [materials, setMaterials] = useState([]);
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from the server using Axios
+    axios
+      .get("http://localhost:8081/data")
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   const handleTopicClick = (topic) => {
     setSelectedTopic(topic);
@@ -121,10 +136,51 @@ function LNUMaterials() {
       <div style={styles.materialsList}>
         <h3>{selectedTopic}</h3>
         {materials.map((material, index) => (
-          <div key={index}>
-            <p>{material.title}</p>
-            <p>{material.description}</p>
-            <a href={material.link}>View Material</a>
+          <div>
+            <table
+              className="table table-bordered table-striped"
+              style={{
+                width: "700px",
+                marginLeft: "21%",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item) => (
+                  <tr className="text-left">
+                    <td
+                      key={item.filename}
+                      className="d-flex justify-content-between"
+                    >
+                      <a
+                        href={`backend/uploads/${item.filename}`}
+                        download={item.filename}
+                      >
+                        {item.filename}
+                      </a>
+                      <button
+                        className="btn btn-outline-success"
+                        onClick={downloadPage}
+                      >
+                        Download
+                      </button>
+                      <button
+                        className="btn btn-outline-danger"
+                        onClick={(e) => handleDelete(item.id)}
+                      >
+                        <span className="material-symbols-outlined">
+                          delete
+                        </span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ))}
       </div>
@@ -136,7 +192,7 @@ function LNUMaterials() {
       <div style={styles.leftSection}>
         <div>
           <Link to="/studentDash" className="btn btn-outline-primary">
-            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="material-symbols-outlined">back</span>
           </Link>
           <h3 className="text-white">Computer Programming</h3>
         </div>

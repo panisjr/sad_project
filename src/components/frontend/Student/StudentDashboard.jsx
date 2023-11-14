@@ -143,7 +143,12 @@ function StudentDashboard() {
                 />
               </div>
             </button>
-
+            <button
+              className="btn btn-primary lnu_materials"
+              onClick={handleLNUMaterials}
+            >
+              LNU Materials
+            </button>
             {/* Logout button */}
             <Link
               className="btn btn-primary logout_student"
@@ -172,12 +177,6 @@ function StudentDashboard() {
           <div className="text-center dash_student">
             <div className="welcome">
               <h1 className="pt-4 ">Welcome to Dashboard!</h1>
-              <button
-                className="btn btn-primary top-left-button"
-                onClick={handleLNUMaterials}
-              >
-                LNU Materials
-              </button>
             </div>
 
             <div className=" d-grid align-items-center justify-content-center mt-5 p-5">

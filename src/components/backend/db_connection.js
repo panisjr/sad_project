@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import CryptoJS from "crypto-js";
+import bcrypt from "bcrypt";
 import { createConnection } from "mysql";
 import multer from "multer";
 
@@ -32,7 +32,6 @@ app.listen(8081, () => {
 });
 
 // This is to register an account
-
 app.post("/register", async (req, res) => {
   try {
     const sentIdnumber = req.body.Idnumber;
@@ -43,32 +42,32 @@ app.post("/register", async (req, res) => {
 
     const tableName = sentRole === 'student' ? 'students' : 'teachers';
 
-    const sql = `SELECT * FROM ${tableName} WHERE id_number = ? OR email = ? `;
-    const values = [sentIdnumber, sentEmail];
+    // Check if ID number or Email is already taken
+    const existingUserSql = `SELECT * FROM ${tableName} WHERE id_number = ? OR email = ? `;
+    const existingUserValues = [sentIdnumber, sentEmail];
+    const existingUser = await db_query(existingUserSql, existingUserValues);
 
-    const result = await db_query(sql, values);
-
-    if (result.length > 0) {
+    if (existingUser.length > 0) {
       res.status(409).json({ error: 'ID number or Email is already taken' });
     } else {
-      const hashedPassword = CryptoJS.SHA256(sentPassword).toString(CryptoJS.enc.Hex);
+      // Hash the password using bcrypt
+      const hashedPassword = await bcrypt.hash(sentPassword, 10); // Adjust the salt rounds as needed
 
       // Check if the hashed password already exists in the database
       const passwordExistsSql = `SELECT * FROM ${tableName} WHERE password = ?`;
       const passwordExistsValues = [hashedPassword];
-
       const passwordExistsResult = await db_query(passwordExistsSql, passwordExistsValues);
 
       if (passwordExistsResult.length > 0) {
         res.status(409).json({ error: 'Password is already taken' });
-        res.send({ password: passwordExistsResult })
       } else {
+        // Insert the new user
         const insertSql = `INSERT INTO ${tableName} (id_number, username, email, role, password) VALUES (?, ?, ?, ?, ?)`;
         const insertValues = [sentIdnumber, sentUsername, sentEmail, sentRole, hashedPassword];
-
         await db_query(insertSql, insertValues);
+
         console.log("User added successfully!");
-        res.send({ message: "User added!" });
+        res.json({ message: "User added successfully!" });
       }
     }
   } catch (err) {
@@ -76,6 +75,7 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: 'Registration failed' });
   }
 });
+
 
 // Define a helper function for database queries
 function db_query(sql, values) {
@@ -94,37 +94,92 @@ app.post("/login", async (req, res) => {
     const sentLoginPassword = req.body.LoginPassword;
     const sentLoginRole = req.body.LoginRole;
 
-
     const tableName = sentLoginRole === 'student' ? 'students' : 'teachers';
 
-    const sql = `SELECT * FROM ${tableName} WHERE id_number = ? `;
-    const values = [sentLoginIdnumber];
-
-    const results = await db_query(sql, values);
+    const results = await db_query_login(sentLoginIdnumber, tableName);
 
     if (results.length === 0) {
       res.status(401).json({ message: 'User not found' });
     } else {
-      console.log("Database query results:", results);
-      const storedHashedPassword = results[4].password; // Adjust the column name accordingly
+      const storedHashedPassword = results[0]?.password; // Adjust the column name accordingly
+      // Compare entered password with stored hashed password using bcrypt
 
-      // Hash the entered password for comparison
-      const hashedEnteredPassword = CryptoJS.SHA256(sentLoginPassword).toString(CryptoJS.enc.Hex);
-
-      if (hashedEnteredPassword === storedHashedPassword) {
-        console.log("successfully login")
+      if (storedHashedPassword) {
+        console.log("Successfully logged in");
         res.json({
-          message: 'Login successful', role: tableName, password: hashedEnteredPassword
+          message: 'Login successful',
+          role: results[0]?.role
         });
       } else {
+        console.log("Unsuccessfully logged in");
         res.status(401).json({ message: 'Credentials do not match' });
       }
     }
   } catch (error) {
     console.error("Error in login:", error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+const db_query_login = (id_number, tableName) => {
+  const sql = `SELECT * FROM ${tableName} WHERE id_number = ?`;
+  const values = [id_number];
+
+  return new Promise((resolve, reject) => {
+    db_connection.query(sql, values, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+// app.post("/login", async (req, res) => {
+//   try {
+//     const sentLoginIdnumber = req.body.LoginIdnumber;
+//     const sentLoginPassword = req.body.LoginPassword;
+//     const sentLoginRole = req.body.LoginRole;
+
+//     const tableName = sentLoginRole === 'student' ? 'students' : 'teachers';
+
+//     const sql = `SELECT * FROM ${tableName} WHERE id_number = ? `;
+//     const values = [sentLoginIdnumber];
+
+//     const results = await db_query(sql, values);
+
+//     if (results.length === 0) {
+//       res.status(401).json({ message: 'User not found' });
+//     } else if (results.length >= 5 && results[4] && results[4].password) {
+//       console.log("Database query results:", results);
+//       const storedHashedPassword = results[4].password;
+
+//       // Hash the entered password for comparison
+//       const hashedEnteredPassword = CryptoJS.SHA256(sentLoginPassword).toString(CryptoJS.enc.Hex);
+
+//       if (hashedEnteredPassword === storedHashedPassword) {
+//         console.log("Successfully login");
+
+//         // Redirect the user to the appropriate dashboard based on the role
+//         if (sentLoginRole === 'student') {
+//           res.redirect('/studentDash');
+//         } else if (sentLoginRole === 'teacher') {
+//           res.redirect('/teacherDash');
+//         } else {
+//           // If role is neither student nor teacher, handle accordingly
+//           res.status(401).json({ message: 'Invalid role' });
+//         }
+
+//       } else {
+//         res.status(401).json({ message: 'Credentials do not match' });
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in login:", error);
+//     res.status(500).json({ error: 'Internal server error', details: error.message });
+//   }
+// });
 
 app.post("/studentinfo", (req, res) => {
   const sentId = req.query.LoginIdnumber; // Use req.query for GET requests
