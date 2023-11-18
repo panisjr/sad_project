@@ -36,6 +36,7 @@ function TeacherDashboard() {
   const [src, setSrc] = useState(false);
   const [profile, setProfile] = useState([]);
   const [pview, setpview] = useState(false);
+  const [deleteFile, setDeleteFile] = useState(false);
   const profileFinal = profile.map((item) => item.pview);
 
   const onClose = () => {
@@ -64,7 +65,6 @@ function TeacherDashboard() {
   }, []);
 
   // Delete File
-  const [deleteFile, setDeleteFile] = useState(false);
   const reloadPage = () => {
     window.location.reload();
   };

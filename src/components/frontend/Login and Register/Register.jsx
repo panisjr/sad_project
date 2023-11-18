@@ -55,7 +55,7 @@ function Register() {
     return idPattern.test(id_number);
   };
   //Onclick to get what the data that the user entered
-  const handleRegistration = (e) => {
+  const handleRegistration = async (e) => {
     e.preventDefault();
     //Validte based on role
     let isValidIdNumber = true;
@@ -81,11 +81,8 @@ function Register() {
           Role: role,
         })
         .then((res) => {
-          setData(res);
-          if (res.data.error) {
-            setShowPasswordModal(true);
+          if (res) {
             // Usage in createUser function
-          } else {
             setShowSuccessful(true);
             // To clear the field after the input
             setIdnumber("");

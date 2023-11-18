@@ -135,7 +135,7 @@ function LNUMaterials() {
     return (
       <div style={styles.materialsList}>
         <h3>{selectedTopic}</h3>
-        {materials.map((material, index) => (
+        {/* {materials.map((material, index) => (
           <div>
             <table
               className="table table-bordered table-striped"
@@ -182,7 +182,7 @@ function LNUMaterials() {
               </tbody>
             </table>
           </div>
-        ))}
+        ))} */}
       </div>
     );
   };

@@ -1,0 +1,122 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.landingContainer{
+    margin: 0;
+    padding: 0;
+    width: 1358px;
+    height: 642px;
+    background-image: url("./images/landing_page_bg.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.landingNavbar{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    background-color: rgb(31, 96, 140, 0.3);
+}
+ul{
+    margin-top: 20px;
+    margin-right: 20px;
+}
+.aboutNavButton{
+    margin-right: 850px;
+}
+li{
+    margin: 15px;
+    display: inline;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+.landingNavButton{
+    color: white;
+    text-decoration: none;
+}
+.landingNavButton:hover{
+    text-decoration: underline white;
+    transition-duration: .3ms;
+    color: white;
+}
+
+/* Content */
+.contentContainer{
+    height: 92%;
+    padding: 50px;
+    overflow-y: auto;
+}
+p{
+    width: 600px;
+    padding: 10px;
+}
+.secondContent
+{
+display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+.secondContent p{
+    margin: 0;
+}
+.secondContent h2{
+    margin-right: 40px;
+}
+.secondContent img {
+    top: 0;
+    right: 0;
+    width: 300px;
+  }
+
+  /* About Css */
+  .aboutContainer{
+    width: 100%;
+    background-color: #0f2c3f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 15px;
+  }
+  .aboutContainer p,a,h2{
+    color: white;
+    text-decoration: none;
+  }
+  .aboutContainer a:hover{
+    text-decoration: underline;
+    color: white;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px; /* Set the width of the scrollbar */
+  }
+  
+  /* Style for the scrollbar handle or thumb */
+  ::-webkit-scrollbar-thumb {
+    background-color: #3498db; /* Set the color of the thumb */
+    border-radius: 6px; /* Optional: Set the border-radius of the thumb */
+  }
+  
+  /* Style for the scrollbar track when not being hovered */
+  ::-webkit-scrollbar-track {
+    background-color: #ecf0f1; /* Set the color of the track */
+    border-radius: 6px; /* Optional: Set the border-radius of the thumb */
+
+  }
+  
+  /* Hide the scrollbar when not being used */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #2980b9; /* Optional: Set a different color on hover */
+  }
+  
+  /* Hide the scrollbar when not being used */
+  ::-webkit-scrollbar-thumb:active {
+    background-color: #1f618d; /* Optional: Set a different color when active */
+  }

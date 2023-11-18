@@ -1,28 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
 import "./Admin.css";
 
 function AdminDashboard() {
+  const [showModal, setShowModal] = useState(false);
+  const [totalStudent, setTotalStudent] = useState("");
+  const [totalTeacher, setTotalTeacher] = useState("");
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
-
-  const handleStudent = () => {
-    // Implement navigation to the Java course dashboard
-    navigate("/studentAd"); // Define your route for the Java dashboard
-  };
-
-  const handleTeacher = () => {
-    // Implement navigation to the Python course dashboard
-    navigate("/teacherAd"); // Define your route for the Python dashboard
-  };
 
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
   };
 
-  const [showModal, setShowModal] = useState(false);
+  useEffect(() => {
+    // Fetch total rows from the server
+    axios
+      .get("http://localhost:8081/totalStudent")
+      .then((response) => {
+        // Update state with the total rows
+        setTotalStudent(response.data.totalStudent);
+      })
+      .catch((error) => {
+        console.error("Error fetching total rows:", error);
+      });
+  }, []);
+  useEffect(() => {
+    // Fetch total rows from the server
+    axios
+      .get("http://localhost:8081/totalTeacher")
+      .then((response) => {
+        // Update state with the total rows
+        setTotalTeacher(response.data.totalTeacher);
+      })
+      .catch((error) => {
+        console.error("Error fetching total rows:", error);
+      });
+  }, []);
   return (
     <>
       {/* Admin Profile Info */}
@@ -56,6 +73,7 @@ function AdminDashboard() {
                 Courses
               </Link>
             </div>
+
             <Link
               className="btn btn-primary logoutBtn "
               onClick={() => setShowModal(true)}
@@ -80,19 +98,24 @@ function AdminDashboard() {
           </div>
 
           {/* Admin Dashboard */}
-          <div className="col-10 text-center dash_admin">
+          <div className="col-10 text-center adminContentContainer">
             <div className="col-10 d-flex align-items-center welcome">
               <h1 className="pt-4 ">Welcome to Dashboard!</h1>
             </div>
             <div className="d-flex align-items-center justify-content-center">
               <div className="custom_data col bg-warning rounded p-2">
                 <h5>Students</h5>
-                <p>Total Students 20</p>
+                <p>
+                  Total Registered Accounts:{" "}
+                  {totalStudent !== null ? totalStudent : "Loading..."}
+                </p>
               </div>
               <div className="custom_data col bg-primary ms-2 rounded p-2">
-                {" "}
                 <h5>Teachers</h5>
-                <p>Total Teachers 23</p>
+                <p>
+                  Total Registered Accounts:{" "}
+                  {totalTeacher !== null ? totalTeacher : "Loading..."}
+                </p>
               </div>
               <div className="custom_data col bg-success ms-2 rounded p-2">
                 <h5>Quizzes</h5>

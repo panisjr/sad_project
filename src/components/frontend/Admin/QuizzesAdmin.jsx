@@ -80,7 +80,7 @@ function Quizzes() {
           </div>
 
           {/* Admin Dashboard */}
-          <div className="col-10 text-center dash_admin">
+          <div className="col-10 text-center adminContentContainer">
             <div className="col-10 d-flex align-items-center welcome">
               <h1 className="pt-4 ">Welcome to Dashboard!</h1>
             </div>

@@ -16,8 +16,6 @@ import TeacherPyDash from "./components/frontend/Teacher/TeacherPyDash";
 import LNUMaterial from "./components/frontend/LNUMaterials/LNUMaterials";
 import Profile from "./components/frontend/Student/Profile";
 import AdminDashboard from "./components/frontend/Admin/AdminDashboard";
-import Student from "./components/frontend/Admin/Student";
-import Teacher from "./components/frontend/Admin/Teacher";
 // JAVA MODULES
 import Data from "./components/frontend/Student/java/Data";
 import Variables from "./components/frontend/Student/java/Variables";
@@ -43,6 +41,7 @@ import IntroPy from "./components/frontend/Student/python/IntroPy";
 import Intro_QPy from "./components/frontend/Student/python/quiz/IntroPy/Intro_QPy";
 import { introPy } from "./components/frontend/Student/python/quiz/IntroPy/introPy";
 //Admin Page
+import AdminLoginPage from "./components/frontend/Login and Register/AdminLoginPage";
 import UploadAd from "./components/frontend/Admin/UploadAd";
 import JavaDashAdmin from "./components/frontend/Admin/JavaDashAdmin";
 import PyDashAdmin from "./components/frontend/Admin/PyDashAdmin";
@@ -51,6 +50,9 @@ import AddCourse from "./components/frontend/Admin/AddCourse";
 import StudentAdmin from "./components/frontend/Admin/StudentAdmin";
 import TeacherAdmin from "./components/frontend/Admin/TeacherAdmin";
 import Quizzes from "./components/frontend/Admin/QuizzesAdmin";
+import AddTopic from "./components/frontend/Admin/AddTopic";
+import EditTopic from "./components/frontend/Admin/EditTopic";
+// End Admin Page
 //Upload page
 import Upload from "./components/frontend/Teacher/Upload";
 import Download from "./components/frontend/Teacher/Download";
@@ -76,12 +78,6 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />}>
             Admin
           </Route>
-          <Route path="/teacherAd" element={<Teacher />}>
-            TeacherAdmin
-          </Route>
-          <Route path="/studentAd" element={<Student />}>
-            StudentAdmin
-          </Route>
           <Route path="/addcourse" element={<AddCourse />}>
             Add Course
           </Route>
@@ -106,7 +102,15 @@ function App() {
           <Route path="/quizzes" element={<Quizzes />}>
             Quizzes Page
           </Route>
-
+          <Route path="/adminLoginPage" element={<AdminLoginPage />}>
+            Admin Login Page
+          </Route>
+          <Route path="/addTopic" element={<AddTopic />}>
+            Add Topic Page
+          </Route>
+          <Route path="/editTopic" element={<EditTopic />}>
+            Edit Topic Page
+          </Route>
           {/* End Admin Page */}
           {/* Student Page */}
           <Route path="/studentDash" element={<StudentDashboard />}>

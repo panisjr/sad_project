@@ -12,7 +12,7 @@ import "./Student.css";
 function StudentDashboard() {
   const navigate = useNavigate(); // Define the navigate function here
   // Define the data
-  const [data, setData] = useState([]);
+  const [name, setName] = useState("");
   const handleLNUMaterials = () => {
     navigate("/lnuMaterials"); // Define the route for StudentJavaDash
   };
@@ -47,24 +47,34 @@ function StudentDashboard() {
   const onCrop = (view) => {
     setpview(view);
   };
-
+  useEffect(() => {
+    // Retrieve profile picture URL from localStorage on component mount
+    const storedProfile = localStorage.getItem("profile");
+    if (storedProfile) {
+      setProfile([JSON.parse(storedProfile)]);
+    }
+  }, []);
   const saveCropImage = () => {
-    setProfile([...profile, { pview }]);
+    // Save profile picture URL to localStorage
+    localStorage.setItem("profile", JSON.stringify({ pview: src }));
+    setProfile([{ pview: src }]);
     setImageCrop(false);
   };
-
+  // Fetch student data when the component mounts
+  axios.defaults.withCredentials = true;
   useEffect(() => {
-    // Fetch student data when the component mounts
-    const fetchStudentData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8081/studentinfo");
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching student data:", error);
-      }
-    };
-
-    fetchStudentData();
+    axios
+      .get("http://localhost:8081/studentinfo")
+      .then((res) => {
+        if (res.data.valid) {
+          setName(res.data.username);
+        } else {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
   return (
     <>
@@ -79,17 +89,15 @@ function StudentDashboard() {
               <img
                 className="profile_picture"
                 onClick={() => setImageCrop(true)}
-                src={profileFinal.length ? profileFinal : img}
+                src={
+                  profile.length && profile[0].pview ? profile[0].pview : img
+                }
                 alt=""
               />
-              {data.map((item) => (
-                <label
-                  className="student_name font-semibold text-5xl "
-                  key={item.username}
-                >
-                  {item.username}
-                </label>
-              ))}
+
+              <label className="student_name font-semibold text-5xl ">
+                {name}
+              </label>
 
               <div className="upload">
                 <Dialog

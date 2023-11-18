@@ -1,14 +1,27 @@
 import express, { json } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import bcrypt from "bcrypt";
+import bcrypt, { genSaltSync } from "bcrypt";
 import { createConnection } from "mysql";
 import multer from "multer";
+import cookieParser from "cookie-parser";
+import session from "express-session";
 
+const saltRounds = bcrypt.genSaltSync(10);
 const app = express();
 app.use(json());
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24
+  }
+}));
 
 app.use(express.urlencoded({ extended: true }));
 // Create a MySQL connection
@@ -32,172 +45,151 @@ app.listen(8081, () => {
 });
 
 // This is to register an account
-app.post("/register", async (req, res) => {
-  try {
-    const sentIdnumber = req.body.Idnumber;
-    const sentUsername = req.body.Username;
-    const sentEmail = req.body.Email;
-    const sentPassword = req.body.Password;
-    const sentRole = req.body.Role;
-
-    const tableName = sentRole === 'student' ? 'students' : 'teachers';
-
-    // Check if ID number or Email is already taken
-    const existingUserSql = `SELECT * FROM ${tableName} WHERE id_number = ? OR email = ? `;
-    const existingUserValues = [sentIdnumber, sentEmail];
-    const existingUser = await db_query(existingUserSql, existingUserValues);
-
-    if (existingUser.length > 0) {
-      res.status(409).json({ error: 'ID number or Email is already taken' });
-    } else {
-      // Hash the password using bcrypt
-      const hashedPassword = await bcrypt.hash(sentPassword, 10); // Adjust the salt rounds as needed
-
-      // Check if the hashed password already exists in the database
-      const passwordExistsSql = `SELECT * FROM ${tableName} WHERE password = ?`;
-      const passwordExistsValues = [hashedPassword];
-      const passwordExistsResult = await db_query(passwordExistsSql, passwordExistsValues);
-
-      if (passwordExistsResult.length > 0) {
-        res.status(409).json({ error: 'Password is already taken' });
-      } else {
-        // Insert the new user
-        const insertSql = `INSERT INTO ${tableName} (id_number, username, email, role, password) VALUES (?, ?, ?, ?, ?)`;
-        const insertValues = [sentIdnumber, sentUsername, sentEmail, sentRole, hashedPassword];
-        await db_query(insertSql, insertValues);
-
-        console.log("User added successfully!");
-        res.json({ message: "User added successfully!" });
-      }
-    }
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
-
-// Define a helper function for database queries
-function db_query(sql, values) {
-  return new Promise((resolve, reject) => {
-    db_connection.query(sql, values, (err, results) => {
-      if (err) reject(err);
-      else resolve(results);
-    });
-  });
-}
-
-// This is to Login an account
-app.post("/login", async (req, res) => {
-  try {
-    const sentLoginIdnumber = req.body.LoginIdnumber;
-    const sentLoginPassword = req.body.LoginPassword;
-    const sentLoginRole = req.body.LoginRole;
-
-    const tableName = sentLoginRole === 'student' ? 'students' : 'teachers';
-
-    const results = await db_query_login(sentLoginIdnumber, tableName);
-
-    if (results.length === 0) {
-      res.status(401).json({ message: 'User not found' });
-    } else {
-      const storedHashedPassword = results[0]?.password; // Adjust the column name accordingly
-      // Compare entered password with stored hashed password using bcrypt
-
-      if (storedHashedPassword) {
-        console.log("Successfully logged in");
-        res.json({
-          message: 'Login successful',
-          role: results[0]?.role
-        });
-      } else {
-        console.log("Unsuccessfully logged in");
-        res.status(401).json({ message: 'Credentials do not match' });
-      }
-    }
-  } catch (error) {
-    console.error("Error in login:", error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-const db_query_login = (id_number, tableName) => {
-  const sql = `SELECT * FROM ${tableName} WHERE id_number = ?`;
-  const values = [id_number];
-
-  return new Promise((resolve, reject) => {
-    db_connection.query(sql, values, (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
-
-// app.post("/login", async (req, res) => {
-//   try {
-//     const sentLoginIdnumber = req.body.LoginIdnumber;
-//     const sentLoginPassword = req.body.LoginPassword;
-//     const sentLoginRole = req.body.LoginRole;
-
-//     const tableName = sentLoginRole === 'student' ? 'students' : 'teachers';
-
-//     const sql = `SELECT * FROM ${tableName} WHERE id_number = ? `;
-//     const values = [sentLoginIdnumber];
-
-//     const results = await db_query(sql, values);
-
-//     if (results.length === 0) {
-//       res.status(401).json({ message: 'User not found' });
-//     } else if (results.length >= 5 && results[4] && results[4].password) {
-//       console.log("Database query results:", results);
-//       const storedHashedPassword = results[4].password;
-
-//       // Hash the entered password for comparison
-//       const hashedEnteredPassword = CryptoJS.SHA256(sentLoginPassword).toString(CryptoJS.enc.Hex);
-
-//       if (hashedEnteredPassword === storedHashedPassword) {
-//         console.log("Successfully login");
-
-//         // Redirect the user to the appropriate dashboard based on the role
-//         if (sentLoginRole === 'student') {
-//           res.redirect('/studentDash');
-//         } else if (sentLoginRole === 'teacher') {
-//           res.redirect('/teacherDash');
-//         } else {
-//           // If role is neither student nor teacher, handle accordingly
-//           res.status(401).json({ message: 'Invalid role' });
-//         }
-
-//       } else {
-//         res.status(401).json({ message: 'Credentials do not match' });
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in login:", error);
-//     res.status(500).json({ error: 'Internal server error', details: error.message });
-//   }
-// });
-
-app.post("/studentinfo", (req, res) => {
-  const sentId = req.query.LoginIdnumber; // Use req.query for GET requests
-  const sentloginPassword = req.body.LoginPassword;
-  const sentRole = req.query.LoginRole;
-
+app.post("/register", (req, res) => {
+  const sentIdnumber = req.body.Idnumber;
+  const sentUsername = req.body.Username;
+  const sentEmail = req.body.Email;
+  const sentPassword = req.body.Password;
+  const sentRole = req.body.Role;
   const tableName = sentRole === 'student' ? 'students' : 'teachers';
 
-  const sql = `SELECT username FROM ${tableName} WHERE id_number = ${sentId}`;
-
-  db_connection.query(sql, (err, results) => {
+  // Check if ID number or sentEmail is already taken
+  const sql = `SELECT * FROM ${tableName} WHERE id_number = ? OR email = ? `;
+  const values = [sentIdnumber, sentEmail];
+  db_connection.query(sql, values, async (err, results) => {
     if (err) {
-      console.error('Error querying the database: ' + err);
-      res.status(500).json({ message: 'Database error' });
+      console.log("Error:", err)
+    }
+    else if (results.length > 0) {
+      // ID number or sentEmail is already taken
+      console.log("Already Taken");
+      return res.status(409).json({ error: 'ID number or sentEmail is already taken' });
     } else {
-      res.json(results);
+      // ID number and sentEmail are not taken, proceed with registration
+      const hash = await bcrypt.hash(sentPassword, 10);
+
+      if (hash) {
+        // Insert the new user
+        const insertSql = `INSERT INTO ${tableName} (id_number, username, email, role, password) VALUES (?, ?, ?, ?, ?)`;
+        const insertValues = [sentIdnumber, sentUsername, sentEmail, sentRole, hash];
+
+        db_connection.query(insertSql, insertValues, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Failed to add user' });
+          } else {
+            console.log("User added successfully!");
+            return res.json({ message: "User added successfully!" });
+          }
+        });
+      }
+
     }
   });
+});
+
+// Login
+app.post("/login", (req, res) => {
+  const sentIdnumber = req.body.LoginIdnumber;
+  const sentLoginPassword = req.body.LoginPassword;
+  const sentRole = req.body.LoginRole;
+  const tableName = sentRole === 'student' ? 'students' : 'teachers';
+
+  // Check if the user exists in the specified role table
+  const sql = `SELECT * FROM ${tableName} WHERE id_number = ?`;
+  const values = [sentIdnumber];
+
+  db_connection.query(sql, values, (err, results) => {
+    if (err) {
+      // Handle other errors, e.g., database connection issue
+      console.error('Error checking user credentials:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    if (results.length > 0) {
+      // User found, check password
+      console.log('User-Entered sentPassword:', sentLoginPassword);
+      console.log('Stored Hashed sentPassword:', results[0].password);
+      console.log('Database Query Results:', results);
+
+      bcrypt.compare(sentLoginPassword, results[0].password, (err, passwordMatch) => {
+        if (err) {
+          // Handle the error, e.g., log it or send an error response
+          console.error('Error comparing passwords:', err);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (passwordMatch) {
+          console.log('sentPassword Match:', passwordMatch);
+          req.session.username = results[0]?.username;
+          // Passwords match, user is authenticated
+          console.log('Successfully logged in');
+          // Send back user role to the client
+          res.json({
+            role: results[0].role
+            // Avoid sending sensitive information like passwords to the client
+          });
+        } else {
+          // Passwords don't match, authentication failed
+          console.log('Unsuccessfully logged in');
+          res.status(401).json({ message: 'Credentials do not match' });
+        }
+      });
+
+    }
+  });
+});
+// Admmin Login
+app.post("/adminLogin", (req, res) => {
+  const sentAdminUsername = req.body.AdminUsername;
+  const sentAdminPassword = req.body.AdminPassword;
+  const sql = "SELECT * FROM admin WHERE username = ?";
+  const values = [sentAdminUsername];
+
+  db_connection.query(sql, values, (err, results) => {
+    if (err) {
+      console.error('Error checking user credentials:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.length > 0) {
+      // User found, check password
+      console.log('Database Query Results:', results);
+
+      bcrypt.compare(sentAdminPassword, results[0].password, (err, passwordMatch) => {
+        if (err) {
+          // Handle the error, e.g., log it or send an error response
+          console.error('Error comparing passwords:', err);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (passwordMatch) {
+          console.log('sentPassword Match:', passwordMatch);
+          req.session.username = results[0]?.username;
+          // Passwords match, user is authenticated
+          console.log('Successfully logged in');
+          // Send back user role to the client
+          res.json({
+            username: results[0].username
+            // Avoid sending sensitive information like passwords to the client
+          });
+        } else {
+          // Passwords don't match, authentication failed
+          console.log('Unsuccessfully logged in');
+          res.status(401).json({ message: 'Credentials do not match' });
+        }
+      });
+    }
+  })
+})
+// Get the current username
+app.get("/studentinfo", (req, res) => {
+  if (req.session.username) {
+    return res.json({ valid: true, username: req.session.username });
+  } else {
+    return res.json({ valid: false });
+  }
 });
 // FILES TABLE
 // This is to get the data insert in mysql database
@@ -212,8 +204,87 @@ app.get("/data", (req, res) => {
     }
   });
 });
+// Student Table
+app.get("/studentData", (req, res) => {
+  const sql = "SELECT * FROM students";
+  db_connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error querying the database: ' + err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+// This is to delete the student
+app.delete('/studentDelete/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM students WHERE id = ${id}`;
 
+  db_connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting data');
+    } else {
+      res.status(200).send('Data deleted successfully');
+    }
+  });
+});
+// Get the total registered Students
+app.get('/totalStudent', (req, res) => {
+  const sql = 'SELECT COUNT(*) as total_student FROM students';
 
+  db_connection.query(sql, (err, result) => {
+    if (err) {
+      console.error('Error querying the database: ' + err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      const totalStudent = result[0].total_student;
+      res.json({ totalStudent });
+    }
+  });
+});
+// End of Student Table
+// Teacher Table
+app.get("/teacherData", (req, res) => {
+  const sql = "SELECT * FROM teachers";
+  db_connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error querying the database: ' + err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+// Delete Teacher Account
+app.delete('/teacherDelete/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM teachers WHERE id = ${id}`;
+
+  db_connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting data');
+    } else {
+      res.status(200).send('Data deleted successfully');
+    }
+  });
+});
+// Get the total registered Teachers
+app.get('/totalTeacher', (req, res) => {
+  const sql = 'SELECT COUNT(*) as total_teacher FROM teachers';
+
+  db_connection.query(sql, (err, result) => {
+    if (err) {
+      console.error('Error querying the database: ' + err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      const totalTeacher = result[0].total_teacher;
+      res.json({ totalTeacher });
+    }
+  });
+});
 // This is to delete the files
 app.delete('/delete/:id', (req, res) => {
   const id = req.params.id;
@@ -267,3 +338,64 @@ app.get('/download-data', (req, res) => {
   });
 });
 
+// Courses Table
+app.get("/courseData", (req, res) => {
+  const sql = "SELECT * FROM courses";
+  db_connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error querying the database: ' + err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+app.post('/addTopic', (req, res) => {
+  const sentAddTopic = req.body.AddTopic;
+  const sql = "INSERT INTO courses (`topic`) VALUES (?)";
+  const values = [sentAddTopic];
+  db_connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.log("Error adding topic: ", err);
+    } else {
+      res.json(result);
+    }
+  })
+})
+// Edit a topic by ID
+app.put('/editTopic/:id', (req, res) => {
+  const topicId = parseInt(req.params.id);
+  const topicIndex = topics.findIndex((t) => t.id === topicId);
+
+  if (topicIndex !== -1) {
+    topics[topicIndex].title = req.body.title;
+    res.json({ message: 'Topic updated successfully' });
+  } else {
+    res.status(404).json({ message: 'Topic not found' });
+  }
+});
+// Get a specific topic by ID
+app.get('/getTopic/:id', (req, res) => {
+  const topicId = parseInt(req.params.id);
+  const topic = topics.find((t) => t.id === topicId);
+  if (topic) {
+    res.json(topic);
+  } else {
+    res.status(404).json({ message: 'Topic not found' });
+  }
+});
+// Delete Topic
+app.delete('/topicDelete/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM courses WHERE id = ${id}`;
+
+  db_connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting data');
+    } else {
+      res.status(200).send('Data deleted successfully');
+    }
+  });
+});
+// End Courses Table

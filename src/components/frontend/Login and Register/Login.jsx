@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./LoginRegister.css";
 import axios from "axios";
@@ -10,52 +10,61 @@ function Login() {
   const [role, setRole] = useState("student");
   const [data, setData] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginIdnumber, setLoginIdnumber] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const navigate = useNavigate();
 
   const handleHide = () => {
     setShowLoginModal(false);
   };
-  // To navigate from other pages
-  //UseState to store the inputs
-  const [loginIdnumber, setLoginIdnumber] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/studentinfo")
+      .then((res) => {
+        if (res.data.valid) {
+          navigate("/studentDash");
+        } else {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   //On click to get what the user enteredf
-  const loginUser = async (e) => {
+  const loginUser = (e) => {
     e.preventDefault();
     if (loginIdnumber === "" || loginPassword === "") {
       setShowLoginModal(true);
     } else {
-      try {
-        // Rest of the logic remains the same
-        const res = await axios.post("http://localhost:8081/login", {
+      // Rest of the logic remains the same
+      axios
+        .post("http://localhost:8081/login", {
           LoginIdnumber: loginIdnumber,
           LoginPassword: loginPassword,
           LoginRole: role,
-        });
-        setData(res);
-        if (res.data.role) {
-          switch (res.data.role) {
-            case "student":
-              navigate("/studentDash");
-              break;
-            case "teacher":
-              navigate("/teacherDash");
-              break;
-            default:
-              setShowLoginModal(true);
+        })
+        .then((res) => {
+          if (res.data.role) {
+            switch (res.data.role) {
+              case "student":
+                navigate("/studentDash");
+                break;
+              case "teacher":
+                navigate("/teacherDash");
+                break;
+              default:
+                setShowLoginModal(true);
+            }
+          } else {
+            console.log("Error: Passwords don't match");
           }
-        } else if (
-          res.data.password === storedPassword &&
-          loginIdnumber === "2100880"
-        ) {
-          navigate("/admin");
-        } else {
-          console.log("Error: Passwords don't match");
-        }
-      } catch (error) {
-        setShowLoginModal(true);
-      }
+        })
+        .catch((err) => {
+          console.log(err);
+          setShowLoginModal(true);
+        });
     }
   };
 
@@ -83,10 +92,7 @@ function Login() {
               {/* Image icon */}
               {/* <img src="assets/car-icon.png" alt=""/> */}
               <div className="text">
-                <p>
-                  Welcome Back!
-                  <i />
-                </p>
+                <p>Welcome Back!</p>
               </div>
             </div>
             <div className="col-md-6 right">

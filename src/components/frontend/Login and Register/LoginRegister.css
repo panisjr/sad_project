@@ -38,7 +38,7 @@
 .text{
     position: absolute;
     top: 20%;
-    left: 30%;
+    left: 70%;
     transform: translate(-50%, -50%);
 }
 .text p{

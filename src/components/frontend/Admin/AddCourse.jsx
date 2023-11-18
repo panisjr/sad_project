@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
@@ -7,23 +7,33 @@ import "./Admin.css";
 
 function AddCourse() {
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
-
-  const handleStudent = () => {
-    // Implement navigation to the Java course dashboard
-    navigate("/studentAd"); // Define your route for the Java dashboard
-  };
-
-  const handleTeacher = () => {
-    // Implement navigation to the Python course dashboard
-    navigate("/teacherAd"); // Define your route for the Python dashboard
-  };
+  const [showModal, setShowModal] = useState(false);
+  const [showTopicDeleteModal, setShowTopicDeleteModal] = useState(false);
+  const [data, setData] = useState([]);
 
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
   };
-
-  const [showModal, setShowModal] = useState(false);
+  useEffect(() => {
+    // Fetch data from the server using Axios
+    axios
+      .get("http://localhost:8081/courseData")
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete("http://localhost:8081/topicDelete/" + id);
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       {/* Admin Profile Info */}
@@ -81,67 +91,81 @@ function AddCourse() {
           </div>
 
           {/* Admin Dashboard */}
-          <div className="text-center dash_admin">
-            <div className="align-items-center welcome">
-              <h1 className="pt-4 ">Add Topic</h1>
-            </div>
-            <div className="col-10 bg-primary course_container">
-              <table className="table table-bordered table-striped">
+          <div className="col-10 text-center adminCourseContainer">
+            <div className="topicContainer">
+              <div className="d-flex flex-row align-items-center justify-content-center">
+                <h4 className="text-black">Topic</h4>
+                <Link className="btn btn-warning ms-5 mb-1" to="/addTopic">
+                  Add
+                </Link>
+              </div>
+              <table className="table table-bordered topicTable">
                 <thead>
                   <tr>
-                    <th>Courses</th>
+                    <th className="bg-warning">Courses</th>
+                    <th className="bg-warning"></th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td className="d-flex justify-content-between">
-                      Java Introduction
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                    <td className="d-flex justify-content-between">
-                      Java Operators
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                    <td className="d-flex justify-content-between">
-                      Java Data Types
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                  </tr>
-                </tbody>
+                {data.length === 0 ? (
+                  <tbody>
+                    <tr>
+                      <td className="bg-light text-black">Empty</td>
+                    </tr>
+                  </tbody>
+                ) : (
+                  data.map((item) => (
+                    <tbody>
+                      <tr key={item.id}>
+                        <td className="bg-light text-black">{item.topic}</td>
+                        <td>
+                          <Link className="btn btn-success" to="/editTopic">
+                            Edit
+                          </Link>
+                          <button
+                            className="btn btn-outline-danger"
+                            onClick={() => setShowTopicDeleteModal(true)}
+                          >
+                            <span>delete</span>
+                          </button>
+                          {/* Delete Modal */}
+                          <Modal
+                            show={showTopicDeleteModal}
+                            onHide={() => setShowTopicDeleteModal(false)}
+                          >
+                            <Modal.Header closeButton>
+                              <Modal.Title>Delete Confirmation</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              Are you sure you want to delete this topic?
+                            </Modal.Body>
+                            <Modal.Footer>
+                              <Button
+                                variant="primary"
+                                key={item.id}
+                                onClick={(e) => handleDelete(item.id)}
+                              >
+                                Yes
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                onClick={() => setShowTopicDeleteModal(false)}
+                              >
+                                Cancel
+                              </Button>
+                            </Modal.Footer>
+                          </Modal>
+                          {/* End Delete Modal */}
+                        </td>
+                      </tr>
+                    </tbody>
+                  ))
+                )}
               </table>
-              <Link className="btn btn-outline-warning">Add</Link>
             </div>
-            <div className="col-10 bg-primary quiz_container">
-              <table className="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th>Courses</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="d-flex justify-content-between">
-                      Java Introduction
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                    <td className="d-flex justify-content-between">
-                      Java Operators
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                    <td className="d-flex justify-content-between">
-                      Java Data Types
-                      <button className="btn btn-success">Edit</button>
-                      <button className="btn btn-danger">delete</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <Link className="btn btn-outline-warning">Add</Link>
+            <div className="topicContainer">
+              <div className="d-flex flex-row align-items-center justify-content-center">
+                <h4 className="text-black">Quiz</h4>
+              </div>
             </div>
           </div>
         </div>

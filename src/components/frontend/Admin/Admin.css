@@ -2,12 +2,19 @@
   margin: 0;
   padding: 0;
 }
-.dash_admin{
+.adminContentContainer{
     font-family: Arial, Helvetica, sans-serif;
     color:  white;
-    background-color: #050128;
-    width: 500px;
+    width:1133px;
     margin-left: 225px;
+  }
+  .adminCourseContainer{
+    font-family: Arial, Helvetica, sans-serif;
+    color:  white;
+    width:1133px;
+    margin-left: 225px;
+    display: flex;
+    flex-direction: row ;
   }
   .admin_container{
     width: 1358px;
@@ -21,8 +28,11 @@
   }
   .custom_data{
     height: 100px;
+    width: 30px;
   }
-
+  .custom_data p{
+    margin-left: -170px;
+  }
   .top-left-button {
     position: absolute;
     top: 20px;
@@ -38,9 +48,35 @@
     margin-right: 10px;
     background-image: url('icons/profile1.jpg');
   }
+  .formContainer{
+    background-color: gray;
+    width: 500px;
+    padding: 5px;
+    height: 520px;
+  }
+.topicContentContainer{
+    margin-left: 20px;
+    margin-top: 20px;
+    overflow-y: auto;
+}
 .course_container{
   margin-left: 220px;
   width: 1000px;
+}
+.addtopicContainer{
+  width: 1358px;
+  height: 642px;
+}
+.topicContainer{
+  margin: 5px;
+  height: 630px;
+  width: 500px;
+  padding: 10px;
+  overflow-y: auto;
+  border: 1px solid black;
+}
+.topicTable{
+  margin-top: 10px;
 }
   .custom-AdminInfo{
     border-right: 2px solid #06003d;
