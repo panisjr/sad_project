@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import "./Student.css";
 const styles = {
   javaContainer: {
     display: "flex",
@@ -7,7 +8,7 @@ const styles = {
     backgroundColor: "#ffffff",
     color: "black",
     height: "100vh",
-    width: "1340px",
+    width: "1366px",
     fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
   },
   javaLeftSection: {
@@ -182,7 +183,9 @@ function StudentJavaDash() {
             <div key={index}>
               <p>{material.title}</p>
               <p>{material.description}</p>
-              <a href={material.link}>View Material</a>
+              <a href={material.link} className="text-black viewMaterialBtn">
+                View Material
+              </a>
             </div>
           ))}
         </div>
@@ -194,14 +197,14 @@ function StudentJavaDash() {
     <>
       <div style={styles.javaContainer}>
         <div style={styles.javaLeftSection}>
-          <Link to="/studentDash" className="btn btn-primary mt-1 ">
-            Home
-          </Link>
           <div style={styles.title}>
             {" "}
             <h3>Java - Computer Programming I</h3>
           </div>
           {renderTopicButtons()}
+          <Link to="/studentDash" className="btn btn-primary mt-1 ">
+            Back
+          </Link>
         </div>
         <div style={styles.rightSection}>{renderMaterials()}</div>
       </div>

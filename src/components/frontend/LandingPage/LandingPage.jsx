@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./LandingPage.css";
 // import myImage from "./images/happy-student-posing-with-hands-up.jpg";
@@ -13,20 +13,30 @@ function LandingPage() {
     const homeSection = document.getElementById("home");
     if (homeSection) {
       homeSection.scrollIntoView({ behavior: "smooth" });
+
+      // Add a unique identifier to an element that becomes visible after smooth scroll
+      const scrollCompletionIndicator = document.getElementById(
+        "scrollCompletionIndicator"
+      );
+      if (scrollCompletionIndicator) {
+        scrollCompletionIndicator.style.display = "block";
+      }
     }
   };
-
+  useEffect(() => {
+    sessionStorage.clear();
+  }, []);
   return (
     <>
       <div className="landingContainer">
         <nav className="landingNavbar">
           <ul>
-            <li>
+            <li className="landingNavLi">
               <Link className="landingNavButton" onClick={scrollToHome}>
                 Home
               </Link>
             </li>
-            <li>
+            <li className="landingNavLi">
               <Link
                 className="aboutNavButton landingNavButton"
                 onClick={scrollToAbout}
@@ -36,17 +46,12 @@ function LandingPage() {
             </li>
           </ul>
           <ul>
-            <li>
+            <li className="landingNavLi">
               <Link className="landingNavButton" to="/login">
                 Login
               </Link>
             </li>
-            <li>
-              <Link to="/register" className="landingNavButton">
-                Register
-              </Link>
-            </li>
-            <li>
+            <li className="landingNavLi">
               <Link to="/adminLoginPage" className="landingNavButton">
                 Admin
               </Link>

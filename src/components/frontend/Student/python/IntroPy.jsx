@@ -188,6 +188,15 @@ function IntroPy() {
               <h5>Example:</h5>
               <p>print("Hello")</p>
               <p>print('Hello')</p>
+              <p>
+                Do you want to learn more and enhance your programming skills?
+                <a
+                  href="https://www.w3schools.com/python/"
+                  className="text-black ms-3 externalLink"
+                >
+                  https://www.w3schools.com/python/
+                </a>
+              </p>
             </section>
           </Element>
           <Element name="section3">

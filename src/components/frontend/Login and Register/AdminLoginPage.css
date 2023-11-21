@@ -2,5 +2,9 @@
     background-color: rgb(0, 0, 38);
     padding: 0 233px 0 233px;
     margin: 0;
-    max-width: 1358px;
+    max-width: 1368px;
+}
+.text p{
+    margin-right: 400px;
+    width: 150px;
 }

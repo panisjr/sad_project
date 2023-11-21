@@ -11,7 +11,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     margin: 0;
-    max-width: 1358px;
+    max-width: 1366px;
 }
 .main{
     display: flex;
@@ -135,6 +135,7 @@ img{
     font-size: small;
     margin-top: 25px;
     transition: 0.5s;
+    text-decoration: none;
 }
 span a{
     text-decoration: none;

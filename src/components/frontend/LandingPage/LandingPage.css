@@ -1,34 +1,27 @@
-*{
-    margin: 0;
-    padding: 0;
-}
 .landingContainer{
     margin: 0;
     padding: 0;
-    width: 1358px;
-    height: 642px;
+    width: 1366px;
+    height: 641px;
     background-image: url("./images/landing_page_bg.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
 }
 .landingNavbar{
-    height: 50px;
+    height:60px;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: center;
     background-color: rgb(31, 96, 140, 0.3);
-}
-ul{
-    margin-top: 20px;
-    margin-right: 20px;
+    overflow: hidden  ;
 }
 .aboutNavButton{
-    margin-right: 850px;
+    margin-right: 950px;
 }
-li{
-    margin: 15px;
+.landingNavLi{
+  margin: 20px;
     display: inline;
     justify-content: center;
     align-items: center;
@@ -46,11 +39,11 @@ li{
 
 /* Content */
 .contentContainer{
-    height: 92%;
+    height: 580px;
     padding: 50px;
     overflow-y: auto;
 }
-p{
+.contentContainer p{
     width: 600px;
     padding: 10px;
 }

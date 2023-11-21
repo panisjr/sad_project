@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
+import { useNavigate, Link } from "react-router-dom";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import Avatar from "react-avatar-edit";
@@ -10,9 +10,7 @@ import img from "./icons/profile1.jpg";
 import "./Student.css";
 
 function StudentDashboard() {
-  const navigate = useNavigate(); // Define the navigate function here
   // Define the data
-  const [name, setName] = useState("");
   const handleLNUMaterials = () => {
     navigate("/lnuMaterials"); // Define the route for StudentJavaDash
   };
@@ -24,22 +22,23 @@ function StudentDashboard() {
     navigate("/studentPython"); // Define the route for StudentJavaDash
   };
 
-  const [showModal, setShowModal] = useState(false);
-
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
   };
 
-  //This is to upload profile
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState([]);
+  const [pview, setpview] = useState(() => {
+    // Initialize with the saved value from localStorage, or use a default value
+    const storedPView = localStorage.getItem("pview");
+    return storedPView ? JSON.parse(storedPView) : null;
+  });
   const [imagecrop, setImageCrop] = useState(false);
   const [image, setImage] = useState("");
   const [src, setSrc] = useState(false);
-  const [profile, setProfile] = useState([]);
-  const [pview, setpview] = useState(false);
-
-  const profileFinal = profile.map((item) => item.pview);
-
+  const [showModal, setShowModal] = useState(false);
+  const [username, setUsername] = useState("");
   const onClose = () => {
     setpview(null);
   };
@@ -47,57 +46,42 @@ function StudentDashboard() {
   const onCrop = (view) => {
     setpview(view);
   };
-  useEffect(() => {
-    // Retrieve profile picture URL from localStorage on component mount
-    const storedProfile = localStorage.getItem("profile");
-    if (storedProfile) {
-      setProfile([JSON.parse(storedProfile)]);
-    }
-  }, []);
+
   const saveCropImage = () => {
-    // Save profile picture URL to localStorage
-    localStorage.setItem("profile", JSON.stringify({ pview: src }));
-    setProfile([{ pview: src }]);
+    setProfile([...profile, { pview }]);
     setImageCrop(false);
+    localStorage.setItem("pview", JSON.stringify(pview));
   };
-  // Fetch student data when the component mounts
-  axios.defaults.withCredentials = true;
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/studentinfo")
-      .then((res) => {
-        if (res.data.valid) {
-          setName(res.data.username);
-        } else {
-          navigate("/login");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    let username = sessionStorage.getItem("username");
+    if (username === "" || username === null) {
+      navigate("/");
+    } else {
+      // Set the username in the component state
+      setUsername(username);
+    }
+  });
   return (
     <>
-      {/* Student Profile Info */}
       <div className="container-fluid studentWrapper">
-        <div className="studentContainer">
-          <div className="text-center custom_studentInfo">
-            <h3 className="pt-4">Student Profile</h3>
-
-            {/* This is where you upload your profile */}
+        <div className="row studentContainer">
+          <div className="col-2 text-center studentInfo">
+            <h3 className="text-center pt-3">Student Profile</h3>
             <button className="btn">
               <img
-                className="profile_picture"
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  marginTop: "80px",
+                  marginLeft: "10px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "4px solid #0a0064",
+                }}
                 onClick={() => setImageCrop(true)}
-                src={
-                  profile.length && profile[0].pview ? profile[0].pview : img
-                }
+                src={pview || img}
                 alt=""
               />
-
-              <label className="student_name font-semibold text-5xl ">
-                {name}
-              </label>
 
               <div className="upload">
                 <Dialog
@@ -105,14 +89,14 @@ function StudentDashboard() {
                   header={() => (
                     <p
                       htmlFor=""
-                      className="text-2xl font-semibold textColor dialog"
+                      className="text-2xl text-center font-semibold dialog"
                     >
                       Update Profile
                     </p>
                   )}
                   onHide={() => setImageCrop(false)}
                 >
-                  <div className="confirmation-content flex flex-column align-items-center">
+                  <div className="confirmationContent flex flex-column align-items-center">
                     <Avatar
                       width={500}
                       height={400}
@@ -122,13 +106,12 @@ function StudentDashboard() {
                       shadingColor={"#474649"}
                       backgroundColor={"#474649"}
                     />
-                    <div className="d-flex flex-column align-items-center mt-5 w-12">
+                    <div className="d-flex flex-column align-items-center w-12">
                       <div className="flex justify-content-around w-12 mt-1">
                         <button
-                          className="btn btn-light"
+                          className="btn btn-success m-3"
                           onClick={saveCropImage}
                           label="Save"
-                          icon="pi pi-check"
                         >
                           Save
                         </button>
@@ -151,54 +134,53 @@ function StudentDashboard() {
                 />
               </div>
             </button>
+            <div className="userName text-center">
+              <p>{username}</p>
+            </div>
             <button
-              className="btn btn-primary lnu_materials"
+              className="btn btn-primary lnuMaterials"
               onClick={handleLNUMaterials}
             >
               LNU Materials
             </button>
-            {/* Logout button */}
             <Link
-              className="btn btn-primary logout_student"
+              className="btn btn-primary logoutBtn"
               onClick={() => setShowModal(true)}
             >
               Logout
             </Link>
-
+            {/* Logout Message */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
                 <Modal.Title>Logout Confirmation</Modal.Title>
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
+                <Button variant="danger" onClick={handleLogout}>
+                  Logout
+                </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Cancel
-                </Button>
-                <Button variant="primary" onClick={handleLogout}>
-                  Logout
                 </Button>
               </Modal.Footer>
             </Modal>
           </div>
-
-          {/* Student Dashboard */}
-          <div className="text-center dash_student">
-            <div className="welcome">
-              <h1 className="pt-4 ">Welcome to Dashboard!</h1>
+          <div className="col-10">
+            <div className="d-flex align-items-center">
+              <h1 className="pt-4">Welcome to Dashboard!</h1>
             </div>
-
-            <div className=" d-grid align-items-center justify-content-center mt-5 p-5">
+            <div className="col-10 text-center">
               <button
-                className="courseButton btn btn-primary mb-2 p-5"
+                className="courseButton btn btn-primary"
                 onClick={handleJavaCourse}
               >
-                JAVA - Computer Programming I
+                <h3>JAVA - Computer Programming I</h3>
               </button>
               <button
-                className="courseButton btn btn-primary p-5"
+                className="courseButton btn btn-primary ms-3"
                 onClick={handlePythonCourse}
               >
-                PYTHON - Computer Programming II
+                <h3>PYTHON - Computer Programming II</h3>
               </button>
             </div>
           </div>
@@ -207,4 +189,5 @@ function StudentDashboard() {
     </>
   );
 }
+
 export default StudentDashboard;

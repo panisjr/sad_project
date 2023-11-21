@@ -38,38 +38,22 @@ function TeacherAdmin() {
     <>
       {/* Admin Profile Info */}
 
-      <div className="container-fluid bg">
+      <div className="container-fluid adminDashWrapper">
         <div className="row admin_container">
-          <div className="col-2 text-center custom-AdminInfo">
-            <h3 className="pt-4">Admin</h3>
+          <div className="col-2 text-center adminInfo">
+            <h3 className="pt-5">Admin</h3>
 
             {/* Logout button */}
             <div className=" d-grid align-items-center justify-content-center">
-              <Link className="btn btn-outline-warning mb-2 mt-5" to="/admin">
+              <Link className="btn btn-warning m-2 mt-5" to="/admin">
                 Dashboard
               </Link>
-              <Link
-                className=" btn btn-outline-warning mb-2"
-                to="/studentAdmin"
-              >
-                Student
-              </Link>
-              <Link
-                className=" btn btn-outline-warning mb-2"
-                to="/teacherAdmin"
-              >
-                Teacher
-              </Link>
-              <Link className=" btn btn-outline-warning mb-2" to="/quizzes">
-                Quizzes
-              </Link>
-              {/* To Add Course */}
-              <Link className=" btn btn-outline-warning" to="/addcourse">
-                Courses
+              <Link className="btn btn-warning m-2" to="/register">
+                Register New Account
               </Link>
             </div>
             <Link
-              className="btn btn-primary logoutBtn "
+              className="btn btn-primary logoutBtnAdmin "
               onClick={() => setShowModal(true)}
             >
               Logout
@@ -81,11 +65,11 @@ function TeacherAdmin() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
+                <Button variant="danger" onClick={handleLogout}>
+                  Logout
+                </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Cancel
-                </Button>
-                <Button variant="primary" onClick={handleLogout}>
-                  Logout
                 </Button>
               </Modal.Footer>
             </Modal>
@@ -94,14 +78,21 @@ function TeacherAdmin() {
 
           {/* Admin Dashboard */}
           <div className="col-10 text-center adminContentContainer">
-            <div className="col-10 welcome">
-              <h1 className="pt-4 ">Teacher</h1>
+            <div className="col-10 admin_container">
+              <h1
+                style={{
+                  marginLeft: "200px",
+                  marginTop: "20px",
+                }}
+              >
+                Teacher
+              </h1>
               <div>
                 <table
                   className="table table-bordered studentDataTable"
                   style={{
                     width: "700px",
-                    marginLeft: "21%",
+                    marginLeft: "430px",
                   }}
                 >
                   <thead>
@@ -133,7 +124,7 @@ function TeacherAdmin() {
                           <td className="bg-light text-black">{item.email}</td>
                           <td>
                             <button
-                              className="btn btn-outline-danger"
+                              className="btn btn-danger"
                               onClick={() => setShowTeacherModal(true)}
                             >
                               <span>delete</span>
@@ -152,7 +143,7 @@ function TeacherAdmin() {
                               </Modal.Body>
                               <Modal.Footer>
                                 <Button
-                                  variant="primary"
+                                  variant="danger"
                                   key={item.id}
                                   onClick={(e) => handleDelete(item.id)}
                                 >

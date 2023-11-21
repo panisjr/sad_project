@@ -5,7 +5,7 @@
   background-color: white;
 }
 
-.navbar {
+.navbarJavaCourse {
 background: linear-gradient(to bottom, #3e88dd, #0a0064);
 display: flex;
 justify-content: space-between;
@@ -14,32 +14,39 @@ width: 100%;
   color: #fff;
   text-align: center;
   padding: 15px;
-  position: fixed;
-  top: 0;
-  z-index: 1;
 }
 
-.navbar ul {
+.navbarJavaCourse ul {
   list-style: none;
   padding: 0;
 }
 
-.navbar ul li {
+.navbarJavaCourse ul li {
   margin-left: 10px;
   float: left;
 
 }
 
-.navbar a {
+.navbarJavaCourse a {
   text-decoration: none;
   color: #fff;
 }
 
 .content {
-  flex: 1;
+  overflow-y: auto;
+  height: 580px;
 }
 
 section {
   padding: 100px;
   border: 1px solid #ccc;
+}
+section h2{
+  color: black;
+}
+.courseWrapper{
+  width: 1366px;
+}
+.externalLink:hover{
+  text-decoration: underline;
 }

@@ -71,7 +71,7 @@ const Intro_Q = ({ questions }) => {
           <>
             <span className="active-question-no">{currentQuestion + 1}</span>
             <span className="total-question">/{questions.length}</span>
-            <h2>{question}</h2>
+            <h2 className="text-black">{question}</h2>
             <ul>
               {choices.map((choice, index) => (
                 <li
@@ -106,7 +106,7 @@ const Intro_Q = ({ questions }) => {
               Wrong Answers: <span>{result.wrongAnswers}</span>
             </p>
             <button onClick={onTryAgain}>Try again</button>
-            <button onClick={back}>Back</button>
+            <button onClick={back}>Exit</button>
           </div>
         )}
       </div>
@@ -117,7 +117,7 @@ const Intro_Q = ({ questions }) => {
         </Modal.Header>
         <Modal.Body>Do you want to quit?</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={back}>
+          <Button variant="danger" onClick={back}>
             Yes
           </Button>
           <Button variant="secondary" onClick={closeQuit}>

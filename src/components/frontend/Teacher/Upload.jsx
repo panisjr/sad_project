@@ -13,6 +13,9 @@ function App() {
 
   // To navigate users to different pages
   const navigateTo = useNavigate();
+  const cancel = () => {
+    navigateTo("/teacherDash");
+  };
   const upload = () => {
     const formData = new FormData();
     // formData.append("name", name);
@@ -40,47 +43,6 @@ function App() {
   return (
     <div className="container-fluid m-5">
       <div className="row" style={{ width: "500px" }}>
-        {/* <div className="col-12">
-          <label className="form-label">Name</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Name"
-            autoComplete="off"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="col-12">
-          <label className="form-label">Email</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Email"
-            autoComplete="off"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="col-12">
-          <label className="form-label">Address</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Address"
-            autoComplete="off"
-            onChange={(e) => setAddress(e.target.value)}
-          />
-        </div>
-        <div className="col-12">
-          <label className="form-label">Salary</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter salary"
-            autoComplete="off"
-            onChange={(e) => setSalary(e.target.value)}
-          />
-        </div> */}
-
         <div className="col-12 d-block align-items-center justify-content-center p-5">
           <div>
             <label className="form-label">Upload File</label>
@@ -99,7 +61,11 @@ function App() {
           >
             Upload
           </button>
-          <button className="btn btn-danger ms-2" style={{ marginTop: "20px" }}>
+          <button
+            className="btn btn-danger ms-2"
+            style={{ marginTop: "20px" }}
+            onClick={cancel}
+          >
             Cancel
           </button>
           <h1

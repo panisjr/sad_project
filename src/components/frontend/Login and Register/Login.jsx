@@ -8,30 +8,15 @@ import Button from "react-bootstrap/Button";
 function Login() {
   // To show the message to the users
   const [role, setRole] = useState("student");
-  const [data, setData] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginIdnumber, setLoginIdnumber] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+
   const navigate = useNavigate();
 
-  const handleHide = () => {
-    setShowLoginModal(false);
+  const refresh = () => {
+    window.location.reload();
   };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8081/studentinfo")
-      .then((res) => {
-        if (res.data.valid) {
-          navigate("/studentDash");
-        } else {
-          navigate("/login");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
   //On click to get what the user enteredf
   const loginUser = (e) => {
     e.preventDefault();
@@ -46,23 +31,24 @@ function Login() {
           LoginRole: role,
         })
         .then((res) => {
-          if (res.data.role) {
+          if (res.data.role && res.data.username) {
             switch (res.data.role) {
               case "student":
                 navigate("/studentDash");
+                sessionStorage.setItem("username", res.data.username);
                 break;
               case "teacher":
                 navigate("/teacherDash");
+                sessionStorage.setItem("username", res.data.username);
                 break;
               default:
                 setShowLoginModal(true);
             }
           } else {
-            console.log("Error: Passwords don't match");
+            setShowLoginModal(true);
           }
         })
         .catch((err) => {
-          console.log(err);
           setShowLoginModal(true);
         });
     }
@@ -74,7 +60,7 @@ function Login() {
         <div className="container main">
           <div className="row">
             {/* Account dont exist */}
-            <Modal show={showLoginModal} onHide={handleHide}>
+            <Modal show={showLoginModal} onHide={refresh}>
               <Modal.Header>
                 <Modal.Title>Account Invalid</Modal.Title>
               </Modal.Header>
@@ -83,7 +69,7 @@ function Login() {
                 Make sure you entered a correct Password or ID number
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={handleHide}>
+                <Button variant="primary" onClick={refresh}>
                   Ok
                 </Button>
               </Modal.Footer>
@@ -184,14 +170,13 @@ function Login() {
                   </div>
                   <div className="signin">
                     <span>
-                      Don't have an account?{" "}
-                      <Link to="/register">Register in here</Link>
+                      <Link to="/">Don't have an account?</Link>
                     </span>
                   </div>
                   <div className="signin">
-                    <span>
-                      <Link to="/">exit</Link>
-                    </span>
+                    <Link to="/" className="btn btn-outline-danger">
+                      Exit
+                    </Link>
                   </div>
                 </form>
               </div>

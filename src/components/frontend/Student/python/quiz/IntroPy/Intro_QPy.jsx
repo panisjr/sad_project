@@ -115,7 +115,7 @@ const Intro_QPy = ({ questions }) => {
         </Modal.Header>
         <Modal.Body>Do you want to quit?</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={back}>
+          <Button variant="danger" onClick={back}>
             Yes
           </Button>
           <Button variant="secondary" onClick={closeQuit}>

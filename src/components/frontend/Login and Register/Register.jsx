@@ -6,9 +6,8 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 function Register() {
   //To navigate the user
-  const navigateTo = useNavigate();
-  const loginPage = () => {
-    navigateTo("/login");
+  const refresh = () => {
+    window.location.reload();
   };
   // UseState to hold our Inputs from users
   const [id_number, setIdnumber] = useState("");
@@ -112,7 +111,7 @@ function Register() {
               </Modal.Header>
               <Modal.Body>Successfully Registered an Account!</Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={loginPage}>
+                <Button variant="primary" onClick={refresh}>
                   Ok
                 </Button>
               </Modal.Footer>
@@ -141,7 +140,7 @@ function Register() {
                 <Button variant="primary" onClick={handleHide}>
                   Yes
                 </Button>
-                <Button variant="secondary" onClick={loginPage}>
+                <Button variant="secondary" onClick={handleHide}>
                   Cancel
                 </Button>
               </Modal.Footer>
@@ -154,7 +153,7 @@ function Register() {
               <Modal.Body>Email is Invalid! Unable to register</Modal.Body>
               <Modal.Body>Please try again later.</Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={loginPage}>
+                <Button variant="primary" onClick={handleHide}>
                   Ok
                 </Button>
               </Modal.Footer>
@@ -167,7 +166,7 @@ function Register() {
               <Modal.Body>ID number is Invalid! Unable to register.</Modal.Body>
               <Modal.Body>Please try again later.</Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={loginPage}>
+                <Button variant="primary" onClick={handleHide}>
                   Ok
                 </Button>
               </Modal.Footer>
@@ -293,15 +292,9 @@ function Register() {
                     </button>
                   </div>
                   <div className="signin">
-                    <span>
-                      Already have an account?{" "}
-                      <Link to="/login">Login in here</Link>
-                    </span>
-                    <div className="signin">
-                      <span>
-                        <Link to="/">exit</Link>
-                      </span>
-                    </div>
+                    <Link to="/admin" className="btn btn-outline-danger">
+                      Exit
+                    </Link>
                   </div>
                 </form>
               </div>

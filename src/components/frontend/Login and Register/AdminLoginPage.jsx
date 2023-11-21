@@ -106,6 +106,7 @@ function AdminLoginPage() {
                       id="username"
                       name="username"
                       required
+                      autoComplete="off"
                       onChange={(event) => {
                         setAdminUsername(event.target.value);
                       }}
@@ -119,6 +120,7 @@ function AdminLoginPage() {
                       id="password"
                       name="password"
                       required
+                      autoComplete="off"
                       onChange={(event) => {
                         setAdminPassword(event.target.value);
                       }}

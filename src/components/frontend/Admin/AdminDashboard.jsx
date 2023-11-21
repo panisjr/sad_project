@@ -43,39 +43,15 @@ function AdminDashboard() {
   return (
     <>
       {/* Admin Profile Info */}
-      <div className="container-fluid bg">
+      <div className="container-fluid adminDashWrapper">
         <div className="row admin_container">
-          <div className="col-2 text-center custom-AdminInfo">
-            <h3 className="pt-4">Admin</h3>
+          <div className="col-2 text-center adminInfo">
+            <h3 className="pt-5">Admin</h3>
 
             {/* Logout button */}
-            <div className=" d-grid align-items-center justify-content-center">
-              <Link className="btn btn-outline-warning mb-2 mt-5" to="/admin">
-                Dashboard
-              </Link>
-              <Link
-                className=" btn btn-outline-warning mb-2"
-                to="/studentAdmin"
-              >
-                Student
-              </Link>
-              <Link
-                className=" btn btn-outline-warning mb-2"
-                to="/teacherAdmin"
-              >
-                Teacher
-              </Link>
-              {/* To Add Course */}
-              <Link className=" btn btn-outline-warning mb-2" to="/quizzes">
-                Quizzes
-              </Link>
-              <Link className=" btn btn-outline-warning" to="/addcourse">
-                Courses
-              </Link>
-            </div>
 
             <Link
-              className="btn btn-primary logoutBtn "
+              className="btn btn-primary logoutBtnAdmin "
               onClick={() => setShowModal(true)}
             >
               Logout
@@ -87,11 +63,11 @@ function AdminDashboard() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
+                <Button variant="danger" onClick={handleLogout}>
+                  Logout
+                </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Cancel
-                </Button>
-                <Button variant="primary" onClick={handleLogout}>
-                  Logout
                 </Button>
               </Modal.Footer>
             </Modal>
@@ -99,29 +75,31 @@ function AdminDashboard() {
 
           {/* Admin Dashboard */}
           <div className="col-10 text-center adminContentContainer">
-            <div className="col-10 d-flex align-items-center welcome">
-              <h1 className="pt-4 ">Welcome to Dashboard!</h1>
-            </div>
-            <div className="d-flex align-items-center justify-content-center">
-              <div className="custom_data col bg-warning rounded p-2">
-                <h5>Students</h5>
-                <p>
-                  Total Registered Accounts:{" "}
-                  {totalStudent !== null ? totalStudent : "Loading..."}
-                </p>
+            <div className="row customRow admin_container">
+              <h1 className="welcomeAdmin">Welcome to Dashboard!</h1>
+              <div className="col-md-6 customColumn rounded">
+                <Link
+                  className="custom_data btn btn-warning"
+                  to="/studentAdmin"
+                >
+                  <h1 className="text-white">Students</h1>
+                  <h5 className="text-white">
+                    Total Registered Accounts:{" "}
+                    {totalStudent !== null ? totalStudent : "Loading..."}
+                  </h5>
+                </Link>
               </div>
-              <div className="custom_data col bg-primary ms-2 rounded p-2">
-                <h5>Teachers</h5>
-                <p>
-                  Total Registered Accounts:{" "}
-                  {totalTeacher !== null ? totalTeacher : "Loading..."}
-                </p>
-              </div>
-              <div className="custom_data col bg-success ms-2 rounded p-2">
-                <h5>Quizzes</h5>
-              </div>
-              <div className="custom_data col bg-dark ms-2 rounded p-2">
-                <h5>Courses</h5>
+              <div className="col-md-6 customColumn rounded">
+                <Link
+                  className="custom_data btn btn-primary"
+                  to="/teacherAdmin"
+                >
+                  <h1>Teachers</h1>
+                  <h5>
+                    Total Registered Accounts:{" "}
+                    {totalTeacher !== null ? totalTeacher : "Loading..."}
+                  </h5>
+                </Link>
               </div>
             </div>
           </div>

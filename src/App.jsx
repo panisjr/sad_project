@@ -11,9 +11,7 @@ import StudentJavaDash from "./components/frontend/Student/StudentJavaDash";
 import TeacherDashboard from "./components/frontend/Teacher/TeacherDashboard";
 import TeacherJavaDash from "./components/frontend/Teacher/TeacherJavaDash";
 import TeacherPyDash from "./components/frontend/Teacher/TeacherPyDash";
-
 // END TEACHER PAGE
-import LNUMaterial from "./components/frontend/LNUMaterials/LNUMaterials";
 import Profile from "./components/frontend/Student/Profile";
 import AdminDashboard from "./components/frontend/Admin/AdminDashboard";
 // JAVA MODULES
@@ -49,7 +47,6 @@ import LNUMaterialsAdmin from "./components/frontend/Admin/LNUMaterialsAdmin";
 import AddCourse from "./components/frontend/Admin/AddCourse";
 import StudentAdmin from "./components/frontend/Admin/StudentAdmin";
 import TeacherAdmin from "./components/frontend/Admin/TeacherAdmin";
-import Quizzes from "./components/frontend/Admin/QuizzesAdmin";
 import AddTopic from "./components/frontend/Admin/AddTopic";
 import EditTopic from "./components/frontend/Admin/EditTopic";
 // End Admin Page
@@ -58,6 +55,8 @@ import Upload from "./components/frontend/Teacher/Upload";
 import Download from "./components/frontend/Teacher/Download";
 // Landing Page
 import LandingPage from "./components/frontend/LandingPage/LandingPage";
+import LNUMaterials from "./components/frontend/Student/LNUMaterials";
+
 function App() {
   return (
     <>
@@ -98,9 +97,6 @@ function App() {
           </Route>
           <Route path="/teacherAdmin" element={<TeacherAdmin />}>
             Teacher Page
-          </Route>
-          <Route path="/quizzes" element={<Quizzes />}>
-            Quizzes Page
           </Route>
           <Route path="/adminLoginPage" element={<AdminLoginPage />}>
             Admin Login Page
@@ -198,7 +194,7 @@ function App() {
           ></Route>
 
           {/* For the lnu materials */}
-          <Route path="/lnuMaterials" element={<LNUMaterial />}>
+          <Route path="/lnuMaterials" element={<LNUMaterials />}>
             LNU Materials
           </Route>
 

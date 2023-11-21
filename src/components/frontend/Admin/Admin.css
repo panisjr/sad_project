@@ -1,43 +1,42 @@
-.bg{
+.adminDashWrapper{
   margin: 0;
   padding: 0;
+  width: 1365px;
+  height: 640px;
 }
 .adminContentContainer{
     font-family: Arial, Helvetica, sans-serif;
-    color:  white;
-    width:1133px;
-    margin-left: 225px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 12px;
   }
   .adminCourseContainer{
     font-family: Arial, Helvetica, sans-serif;
-    color:  white;
-    width:1133px;
-    margin-left: 225px;
+    width:100%;
+    margin-left: 1px;
     display: flex;
     flex-direction: row ;
   }
-  .admin_container{
-    width: 1358px;
-    height: 642px;
+  .customColumn{
+    margin-top:-100px;
   }
-  .welcome{
-    border-radius: 10px;
-    margin: 0;
+  .admin_container{
+    width: 100%;
+    height: 100%;
+  }
+  .welcomeAdmin{
+    margin-left: 250px;
+    margin-top: 30px;
+    width: auto;
+height: fit-content;
     padding: 10px;
     color: #06003d;
   }
   .custom_data{
-    height: 100px;
-    width: 30px;
-  }
-  .custom_data p{
-    margin-left: -170px;
-  }
-  .top-left-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    transform: translate(0, 0);
+    height: 150px;
+    width: 430px;
   }
   .courseButton{
   font-size: 20px;
@@ -67,6 +66,10 @@
   width: 1358px;
   height: 642px;
 }
+.customRow{
+  margin-left: 203px;
+  border-radius: 0;
+}
 .topicContainer{
   margin: 5px;
   height: 630px;
@@ -78,17 +81,18 @@
 .topicTable{
   margin-top: 10px;
 }
-  .custom-AdminInfo{
+  .adminInfo{
     border-right: 2px solid #06003d;
     color: WHITE;
     height: 100%;
     background: linear-gradient(to bottom, #143f71, #050128);
-    margin: 0;
-    padding: 0;
     position: fixed;
+    overflow: hidden;
   }
   .logoutBtnAdmin{
-    margin-top: 150px;
+    position: absolute;
+    bottom: 50px;
+    left: 75px;
   }
   @media screen  and (max-width:600px){
     .admin_container{
