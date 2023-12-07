@@ -3,44 +3,53 @@
     padding: 0;
     width: 1366px;
     height: 641px;
-    background-image: url("./images/landing_page_bg.jpg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
 }
 .landingNavbar{
-    height:60px;
+  background-color: #0c243c;
+    height:70px;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: rgb(31, 96, 140, 0.3);
+    justify-content: space-between;
     overflow: hidden  ;
+    padding-right: 20px;
 }
-.aboutNavButton{
-    margin-right: 950px;
+.logoContainer{
+  display: flex;
+  flex-direction: row;
+}
+.logo{
+  width: 55px;
+  top: 5px;
+  left: 20px;
+}
+.logoName{
+  text-decoration: none;
+  margin-left: 85px;
+  color: white;
 }
 .landingNavLi{
-  margin: 20px;
     display: inline;
+    margin: 5px;
     justify-content: center;
     align-items: center;
     text-decoration: none;
 }
 .landingNavButton{
+  font-size: large;
     color: white;
     text-decoration: none;
+    margin-right: 20px;
 }
 .landingNavButton:hover{
-    text-decoration: underline white;
+    text-decoration: underline #7e8c9c;
     transition-duration: .3ms;
-    color: white;
+    color: #7e8c9c;
 }
 
 /* Content */
 .contentContainer{
-    height: 580px;
-    padding: 50px;
+    height: 571px;
     overflow-y: auto;
 }
 .contentContainer p{
@@ -49,32 +58,66 @@
 }
 .secondContent
 {
+  background-color:   #10b5b8;
 display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-end;
-}
-.secondContent p{
-    margin: 0;
-}
-.secondContent h2{
-    margin-right: 40px;
-}
-.secondContent img {
-    top: 0;
-    right: 0;
-    width: 300px;
+    padding-right: 40px;
   }
+  .secondContent h1{
+    margin-right: 50px;
+  z-index: 1;
+}
+.homeContainer {
+  padding-left: 40px;
+  padding-top: 280px;
+  height: 100%;
+  background-color: #10b5b8;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
 
+.homeContainer.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero {
+  width: 700px;
+  top: 50px;
+  left: 650px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.hero.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero.outro {
+  /* Define the outro animation */
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s ease, transform 1s ease;
+}
   /* About Css */
   .aboutContainer{
+    padding: 0;
+    margin: 0;
     width: 100%;
+    height: 500px;
     background-color: #0f2c3f;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
     padding: 15px;
   }
   .aboutContainer p,a,h2{
@@ -93,15 +136,12 @@ display: flex;
   
   /* Style for the scrollbar handle or thumb */
   ::-webkit-scrollbar-thumb {
-    background-color: #3498db; /* Set the color of the thumb */
-    border-radius: 6px; /* Optional: Set the border-radius of the thumb */
+    background-color: #0f2c3f; /* Set the color of the thumb */
   }
   
   /* Style for the scrollbar track when not being hovered */
   ::-webkit-scrollbar-track {
-    background-color: #ecf0f1; /* Set the color of the track */
-    border-radius: 6px; /* Optional: Set the border-radius of the thumb */
-
+    background-color: #b7b7b7; /* Set the color of the track */
   }
   
   /* Hide the scrollbar when not being used */

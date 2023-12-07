@@ -2,7 +2,7 @@ export const jsQuizz = {
   questions: [
     {
       question:
-                'When was Java developed?',
+        'When was Java developed?',
       choices: [
         '1981',
         '1990',
@@ -25,7 +25,7 @@ export const jsQuizz = {
     },
     {
       question:
-                'The following are common applications for which Java is commonly used EXCEPT:',
+        'The following are common applications for which Java is commonly used EXCEPT:',
       choices: ['Game development', 'Graphic design', 'Mobile app development', 'Web development'],
       type: 'MCQs',
       correctAnswer: 'Graphic design'

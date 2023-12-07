@@ -5,30 +5,73 @@
     font-family: 'Poppins', sans-serif;
 }
 .wrapper{
-    background-image: url("ellenyu.jpg");
-    padding: 0 233px 0 233px;
+    padding: 0;
+    background-image: url("./images/LNU.jpg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     margin: 0;
-    max-width: 1366px;
+    width: 1366px;
+    height: 641px;
 }
 .main{
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: inherit;
+}
+.exitBtn{
+    position: absolute;
+    top:5%;
+    right: 5%;
+    transform: translate(-50%, -50%);
 }
 .side-image{
-    background-image: url("LNU.jpg");
+    background-image: url("./images/login.jpg");
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     border-radius: 10px 0 0 10px;
     position: relative;
+    opacity: 0; /* Initially set opacity to 0 */
+    transform: translateY(70px); /* Initially move down by 50 pixels */
+    /* Transition properties for a smooth animation */
+    transition: opacity 1s ease, transform 1s ease;
 }
+.side-image.animate {
+    opacity: 1; /* Set opacity to 1 for visibility */
+    transform: translateY(0); /* Move back to the original position */
+  }
+  .customLoginRow{
+    opacity: 0; /* Initially set opacity to 0 */
+    transform: translateY(70px); /* Initially move down by 50 pixels */
+    /* Transition properties for a smooth animation */
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  .customLoginRow.animate {
+    opacity: 1; /* Set opacity to 1 for visibility */
+    transform: translateY(0); /* Move back to the original position */
+  }
+.right{
+    color: white;
+    background-color: #0c243c;
+    /* background: linear-gradient(to bottom, #3e88dd, #0a0064); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-radius: 0 10px 10px 0;
+  opacity: 0; /* Initially set opacity to 0 */
+    transform: translateY(70px); /* Initially move down by 50 pixels */
+    /* Transition properties for a smooth animation */
+    transition: opacity 1s ease, transform 1s ease;
+}
+.right.animate {
+    opacity: 1; /* Set opacity to 1 for visibility */
+    transform: translateY(0); /* Move back to the original position */
+  }
 .row{
-  width:  900px;
+  width:  800px;
   height:550px;
   border-radius: 10px;
   background: #fff;
@@ -36,9 +79,10 @@
   box-shadow: 5px 5px 10px 1px rgba(0,0,0,0.2);
 }
 .text{
+    width: 300px;
     position: absolute;
-    top: 20%;
-    left: 70%;
+    top: 15%;
+    left: 40%;
     transform: translate(-50%, -50%);
 }
 .text p{
@@ -49,15 +93,7 @@ i{
     font-weight: 400;
     font-size: 15px;
 }
-.right{
-    color: white;
-    background: linear-gradient(to bottom, #3e88dd, #0a0064);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  border-radius: 0 10px 10px 0;
-}
+
 .input-box{
   width: 330px;
   box-sizing: border-box;

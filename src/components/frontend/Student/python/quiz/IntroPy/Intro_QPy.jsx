@@ -3,7 +3,7 @@ import { resultInitalState } from "./introPy";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import "./index.scss";
+import "../../../java/quiz/Intro/index.scss";
 
 const Intro_QPy = ({ questions }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);

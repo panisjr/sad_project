@@ -1,10 +1,10 @@
 import express, { json } from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import { createConnection } from 'mysql';
 import multer from 'multer';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import session from 'express-session';
 import Bugsnag from '@bugsnag/js';
 
@@ -12,20 +12,6 @@ Bugsnag.start({
   apiKey: '0123456789abcdef0123456789abcdef'
   // Add more configuration options if needed
 });
-const app = express();
-app.use('/uploads', express.static('uploads'));
-app.use(json());
-app.use(cors());
-app.use(bodyParser.json());
-app.use(session({
-  secret: 'asdfghjklasdfghjklasdfghjkl', // Change this to a secure secret
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false },
-}));
-app.use(cookieParser());
-
-app.use(express.urlencoded({ extended: true }));
 // Create a MySQL connection
 const DbConnection = createConnection({
   host: 'localhost',
@@ -33,7 +19,6 @@ const DbConnection = createConnection({
   password: '',
   database: 'sad_project'
 });
-
 // Connect to the MySQL database
 DbConnection.connect((err) => {
   if (err) {
@@ -42,9 +27,24 @@ DbConnection.connect((err) => {
   Bugsnag.notify('MySQL database connected');
 });
 
-app.listen(8081, () => {
-  Bugsnag.notify('Listening');
-});
+const app = express();
+app.use('/uploads', express.static('uploads'));
+app.use(json());
+app.use(cors({
+  origin: ["http://localhost:5173"],
+  methods: ["POST", "GET", "DELETE"],
+  credentials: true
+}));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
+}));
+
+
 
 // This is to register an account
 app.post('/register', (req, res) => {
@@ -53,10 +53,9 @@ app.post('/register', (req, res) => {
   const sentEmail = req.body.Email;
   const sentPassword = req.body.Password;
   const sentRole = req.body.Role;
-  const tableName = sentRole === 'student' ? 'students' : 'teachers';
 
   // Check if ID number or sentEmail is already taken
-  const sql = `SELECT * FROM ${tableName} WHERE id_number = ? OR email = ? `;
+  const sql = "SELECT * FROM users WHERE id_number = ? OR email = ?";
   const values = [sentIdnumber, sentEmail];
   DbConnection.query(sql, values, async (err, results) => {
     if (err) {
@@ -72,7 +71,7 @@ app.post('/register', (req, res) => {
 
       if (hash) {
         // Insert the new user
-        const insertSql = `INSERT INTO ${tableName} (id_number, username, email, role, password) VALUES (?, ?, ?, ?, ?)`;
+        const insertSql = "INSERT INTO users (id_number, username, email, role, password) VALUES (?, ?, ?, ?, ?)";
         const insertValues = [sentIdnumber, sentUsername, sentEmail, sentRole, hash];
 
         DbConnection.query(insertSql, insertValues, (err, results) => {
@@ -81,6 +80,7 @@ app.post('/register', (req, res) => {
             return res.status(500).json({ error: 'Failed to add user' });
           } else {
             Bugsnag.notify('User added successfully!');
+            console.log(req.session.registeredUser);
             return res.json({ message: 'User added successfully!' });
           }
         });
@@ -88,16 +88,21 @@ app.post('/register', (req, res) => {
     }
   });
 });
-
+// User Info
+app.get('/userInfo', (req, res) => {
+  if (req.session.username) {
+    return res.json({ valid: true, username: req.session.username })
+  } else {
+    return res.json({ valid: false })
+  }
+})
 // Login
 app.post('/login', (req, res) => {
   const sentIdnumber = req.body.LoginIdnumber;
   const sentLoginPassword = req.body.LoginPassword;
-  const sentRole = req.body.LoginRole;
-  const tableName = sentRole === 'student' ? 'students' : 'teachers';
 
   // Check if the user exists in the specified role table
-  const sql = `SELECT * FROM ${tableName} WHERE id_number = ?`;
+  const sql = "SELECT * FROM users WHERE id_number = ?";
   const values = [sentIdnumber];
 
   DbConnection.query(sql, values, (err, results) => {
@@ -118,69 +123,14 @@ app.post('/login', (req, res) => {
           Bugsnag.notify(err);
           return res.status(500).json({ error: 'Internal server error' });
         }
-
         if (passwordMatch) {
           Bugsnag.notify('sentPassword Match:', passwordMatch);
-          // req.session.id_number = results[0].id_number;
-          // req.session.username = results[0].username;
-          // Passwords match, user is authenticated
           Bugsnag.notify('Successfully logged in');
-          // Send back user role to the client
-          req.session.save((saveErr) => {
-            if (saveErr) {
-              Bugsnag.notify('Error saving session:');
-              Bugsnag.notify(saveErr);
-              return res.status(500).json({ error: 'Internal server error' });
-            }
-            res.json({
-              role: results[0].role,
-              username: results[0].username
-              // Avoid sending sensitive information like passwords to the client
-            });
-          });
-        } else {
-          // Passwords don't match, authentication failed
-          Bugsnag.notify('Unsuccessfully logged in');
-          res.status(401).json({ message: 'Credentials do not match' });
-        }
-      });
-    }
-  });
-});
-app.post('/adminLogin', (req, res) => {
-  const sentAdminUsername = req.body.AdminUsername;
-  const sentAdminPassword = req.body.AdminPassword;
-  const sql = 'SELECT * FROM admin WHERE username = ?';
-  const values = [sentAdminUsername];
-
-  DbConnection.query(sql, values, (err, results) => {
-    if (err) {
-      Bugsnag.notify('Error checking user credentials:');
-      Bugsnag.notify(err);
-      res.status(500).json({ error: 'Internal server error' });
-      return;
-    }
-    if (results.length > 0) {
-      // User found, check password
-      Bugsnag.notify('Database Query Results:', results);
-
-      bcrypt.compare(sentAdminPassword, results[0].password, (err, passwordMatch) => {
-        if (err) {
-          // Handle the error, e.g., log it or send an error response
-          Bugsnag.notify('Error comparing passwords:');
-          Bugsnag.notify(err);
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-
-        if (passwordMatch) {
-          Bugsnag.notify('sentPassword Match:', passwordMatch);
-          req.session.username = results[0]?.username;
-          // Passwords match, user is authenticated
-          Bugsnag.notify('Successfully logged in');
-          // Send back user role to the client
+          // Store user information in the session
+          req.session.username = results[0].username;
           res.json({
-            username: results[0].username
-            // Avoid sending sensitive information like passwords to the client
+            role: results[0].role,
+            username: results[0].username,
           });
         } else {
           // Passwords don't match, authentication failed
@@ -191,8 +141,6 @@ app.post('/adminLogin', (req, res) => {
     }
   });
 });
-
-
 
 // FILES TABLE
 // This is to get the data insert in mysql database
@@ -209,7 +157,7 @@ app.get('/data', (req, res) => {
 });
 // Student Table
 app.get('/studentData', (req, res) => {
-  const sql = 'SELECT * FROM students';
+  const sql = 'SELECT * FROM users WHERE role = "student"';
   DbConnection.query(sql, (err, results) => {
     if (err) {
       Bugsnag.notify('Error querying the database: ');
@@ -223,7 +171,7 @@ app.get('/studentData', (req, res) => {
 // This is to delete the student
 app.delete('/studentDelete/:id', (req, res) => {
   const id = req.params.id;
-  const sql = `DELETE FROM students WHERE id = ${id}`;
+  const sql = `DELETE FROM users WHERE id = ${id}`;
 
   DbConnection.query(sql, [id], (err, result) => {
     if (err) {
@@ -236,7 +184,7 @@ app.delete('/studentDelete/:id', (req, res) => {
 });
 // Get the total registered Students
 app.get('/totalStudent', (req, res) => {
-  const sql = 'SELECT COUNT(*) as total_student FROM students';
+  const sql = 'SELECT COUNT(*) as total_student FROM users WHERE role = "student"';
 
   DbConnection.query(sql, (err, result) => {
     if (err) {
@@ -252,7 +200,7 @@ app.get('/totalStudent', (req, res) => {
 // End of Student Table
 // Teacher Table
 app.get('/teacherData', (req, res) => {
-  const sql = 'SELECT * FROM teachers';
+  const sql = 'SELECT * FROM users WHERE role = "teacher"';
   DbConnection.query(sql, (err, results) => {
     if (err) {
       Bugsnag.notify(err);
@@ -266,7 +214,7 @@ app.get('/teacherData', (req, res) => {
 // Delete Teacher Account
 app.delete('/teacherDelete/:id', (req, res) => {
   const id = req.params.id;
-  const sql = `DELETE FROM teachers WHERE id = ${id}`;
+  const sql = `DELETE FROM users WHERE id = ${id}`;
 
   DbConnection.query(sql, [id], (err, result) => {
     if (err) {
@@ -280,7 +228,7 @@ app.delete('/teacherDelete/:id', (req, res) => {
 });
 // Get the total registered Teachers
 app.get('/totalTeacher', (req, res) => {
-  const sql = 'SELECT COUNT(*) as total_teacher FROM teachers';
+  const sql = 'SELECT COUNT(*) as total_teacher FROM users WHERE role = "teacher"';
 
   DbConnection.query(sql, (err, result) => {
     if (err) {
@@ -311,6 +259,7 @@ app.delete('/delete/:id', (req, res) => {
     }
   });
 });
+
 // FILES TABLE END
 
 // Create a multer storage configuration to define where to store uploaded files
@@ -327,12 +276,286 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-  const sql = 'INSERT INTO files (`filename`) VALUES (?)';
-  const values = [
-    req.file.filename
-  ];
-  DbConnection.query(sql, [values], (err, result) => {
-    if (err) return res.json({ Error: 'Error singup query' });
-    return res.json({ Status: 'Success' });
+  const title = req.body.title;
+  const dateUpload = new Date().toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
   });
+
+  const sql = 'INSERT INTO files (`title`, `filename`, `instructors_name`,  `date`) VALUES ( ?, ?, ?,?)';
+  const values = [title, req.file.filename, req.session.username, dateUpload];
+
+  DbConnection.query(sql, values, (err, result) => {
+    if (err) {
+      Bugsnag.notify(err);
+      return res.status(500).json({ error: 'Error uploading file' });
+    }
+    return res.json({ status: 'Success' });
+  });
+});
+
+// Search Bar
+// app.post('/search', (req, res) => {
+//   const { searchCriteria, searchTerm } = req.body;
+//   let query;
+
+//   if (!searchTerm) {
+//     // If search term is empty, retrieve all files
+//     query = 'SELECT * FROM files';
+//   } else {
+//     // Otherwise, perform the search based on the specified criteria
+//     switch (searchCriteria) {
+//       case 'filename':
+//         query = `SELECT * FROM files WHERE filename LIKE '%${searchTerm}%'`;
+//         break;
+//       case 'instructors_name':
+//         query = `SELECT * FROM files WHERE instructors_name LIKE '%${searchTerm}%'`;
+//         break;
+//       case 'date':
+//         query = `SELECT * FROM files WHERE date LIKE '%${searchTerm}%'`;
+//         break;
+//       case 'title':
+//         query = `SELECT * FROM files WHERE title LIKE '%${searchTerm}%'`;
+//         break;
+//       default:
+//         res.status(400).json({ error: 'Invalid search criteria' });
+//         return;
+//     }
+//   }
+
+//   DbConnection.query(query, (err, result) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).json({ error: 'Internal server error' });
+//       return;
+//     }
+//     res.json(result);
+//   });
+// });
+app.post('/search', (req, res) => {
+  const { searchTerm } = req.body;
+
+  if (!searchTerm) {
+    // If search term is empty, retrieve all files
+    const query = 'SELECT * FROM files';
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  } else {
+    // Otherwise, dynamically construct the query to search in all columns
+    const query = `
+      SELECT * FROM files 
+      WHERE filename LIKE '%${searchTerm}%' OR 
+            instructors_name LIKE '%${searchTerm}%' OR 
+            date LIKE '%${searchTerm}%' OR 
+            title LIKE '%${searchTerm}%'
+    `;
+
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  }
+});
+
+// Create a topic
+app.post('/addCourse', (req, res) => {
+  const { title, chosenCourse } = req.body;
+  DbConnection.query('INSERT INTO courses (title,course) VALUES (?,?)', [title, chosenCourse], (err, result) => {
+    if (err) {
+      console.error('Error inserting topic:', err);
+      res.status(500).json({ error: 'Error inserting topic' });
+    } else {
+      res.status(201).json({ id: result.insertId, title });
+    }
+  });
+});
+// Get the java and python courses
+app.get('/courses', (req, res) => {
+  DbConnection.query('SELECT * FROM courses', (err, result) => {
+    if (err) {
+      console.error('Error getting courses:', err);
+      res.status(500).json({ error: 'Error getting courses' });
+    } else {
+      res.status(200).json(result);
+    }
+  });
+});
+app.get('/javaCourses', (req, res) => {
+  const sql = 'SELECT * FROM courses WHERE course = "java"';
+  DbConnection.query(sql, (err, results) => {
+    if (err) {
+      Bugsnag.notify('Error querying the database: ');
+      Bugsnag.notify(err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+app.get('/pythonCourses', (req, res) => {
+  const sql = 'SELECT * FROM courses WHERE course = "python"';
+  DbConnection.query(sql, (err, results) => {
+    if (err) {
+      Bugsnag.notify('Error querying the database: ');
+      Bugsnag.notify(err);
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+// End of getting java and python courses
+
+// Get the content
+app.get('/getContent', (req, res) => {
+  DbConnection.query('SELECT * FROM courses', (err, result) => {
+    if (err) {
+      console.error('Error getting courses:', err);
+      res.status(500).json({ error: 'Error getting courses' });
+    } else {
+      res.status(200).json(result);
+    }
+  });
+});
+// Route for updating or adding content
+app.post('/updateContent', (req, res) => {
+  const sentText = req.body.text;
+  const sentTitleId = req.body.titleId;
+
+  // Check if the titleId exists in the courses table
+  const sql = 'SELECT * FROM courses WHERE id = ?';
+  const values = [sentTitleId];
+
+  DbConnection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    if (result.length > 0) {
+      // If the course with the given titleId exists, update the content
+      DbConnection.query(
+        'UPDATE courses SET content = ? WHERE id = ?',
+        [sentText, sentTitleId],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Update error:", updateErr);
+            return res.status(500).json({ success: false, error: "Update error" });
+          }
+
+          res.json(updateResult);
+        }
+      );
+    } else {
+      // If the course with the given titleId doesn't exist, return an error
+      return res.status(404).json({ success: false, error: "Course not found" });
+    }
+  });
+});
+
+// To add Quiz
+app.post('/addQuizQuestions', (req, res) => {
+  const { titleId, quizQuestions } = req.body;
+  // Check if a quiz question already exists for the specified titleId
+  const sql = 'SELECT * FROM courses WHERE id = ?';
+  const values = [titleId];
+
+  DbConnection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    if (result.length > 0) {
+      // If a quiz question exists for the titleId, update it
+      const existingQuizQuestions = result[0].quizQuestions || [];
+      const updatedQuizQuestions = [...existingQuizQuestions, ...quizQuestions];
+      if (existingQuizQuestions) {
+        const insertQuizQuestionsSql = 'UPDATE courses SET quizQuestions = ? WHERE id = ?';
+        const updateQuizQuestionsValues = [JSON.stringify(updatedQuizQuestions), titleId];
+
+        DbConnection.query(insertQuizQuestionsSql, updateQuizQuestionsValues, (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Update error:", updateErr);
+            return res.status(500).json({ success: false, error: "Update error" });
+          }
+
+          res.json(updateResult);
+        });
+      } else {
+        const updateQuizQuestionsSql = 'UPDATE courses SET quizQuestions = ? WHERE id = ?';
+        const updateQuizQuestionsValues = [JSON.stringify(updatedQuizQuestions), titleId];
+
+        DbConnection.query(updateQuizQuestionsSql, updateQuizQuestionsValues, (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error("Update error:", updateErr);
+            return res.status(500).json({ success: false, error: "Update error" });
+          }
+
+          res.json(updateResult);
+        });
+      }
+    } else {
+      // Handle the case where the course does not exist
+      return res.status(404).json({ success: false, error: "Course not found" });
+    }
+  });
+});
+app.get('/getQuizQuestions/:titleId', (req, res) => {
+  const { titleId } = req.params;
+  // Assuming you have a database query to retrieve quiz questions
+  // Replace this with your actual database query
+  const sql = 'SELECT * FROM courses WHERE id = ?';
+  const values = [titleId];
+
+  DbConnection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    if (result.length > 0) {
+      // Assuming quiz questions are stored as JSON in the 'quizQuestions' column
+      const quizQuestions = result[0].quizQuestions || [];
+      res.json({ success: true, quizQuestions });
+    } else {
+      res.status(404).json({ success: false, error: "Course not found" });
+    }
+  });
+});
+
+// This is to delete the Topics
+app.delete('/deleteCourse/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM courses WHERE id = ${id}`;
+
+  DbConnection.query(sql, (err, result) => {
+    if (err) {
+      res.json({
+        err
+      });
+      Bugsnag.notify('Internal server error');
+    } else {
+      res.json({
+        result
+      });
+    }
+  });
+});
+app.listen(8081, () => {
+  Bugsnag.notify('Listening');
 });

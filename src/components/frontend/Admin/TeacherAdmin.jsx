@@ -9,6 +9,9 @@ function TeacherAdmin() {
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
   const [data, setData] = useState([]);
   const [showTeacherDeleteModal, setShowTeacherModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [deleteFile, setDeleteFile] = useState(false);
+  const [deletedItemId, setDeletedItemId] = useState(null);
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
@@ -25,15 +28,40 @@ function TeacherAdmin() {
       });
   }, []);
   // Delete File
-  const handleDelete = async (id) => {
+  const handleYesClick = async () => {
+    // Perform the delete operation using deletedItemId
+    console.log(`Deleting file with ID: ${deletedItemId}`);
     try {
-      await axios.delete("http://localhost:8081/teacherDelete/" + id);
-      window.location.reload();
+      await axios
+        .delete(`http://localhost:8081/teacherDelete/${deletedItemId}`)
+        .then((res) => {
+          if (res) {
+            console.log("File deleted successfully.");
+            setDeleteFile(false);
+            window.location.reload();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setDeleteFile(false);
+        });
     } catch (error) {
       console.log(error);
     }
+
+    // Reset state after deletion
+    setDeleteFile(false);
+    setDeletedItemId(null);
   };
-  const [showModal, setShowModal] = useState(false);
+  const handleNoClick = () => {
+    // Cancel the delete operation
+    setDeleteFile(false);
+    setDeletedItemId(null);
+  };
+  const handleDeleteClick = (itemId) => {
+    setDeleteFile(true);
+    setDeletedItemId(itemId);
+  };
   return (
     <>
       {/* Admin Profile Info */}
@@ -74,6 +102,23 @@ function TeacherAdmin() {
               </Modal.Footer>
             </Modal>
             {/* End Logout Modal */}
+            {/* Delete  Files  */}
+            <Modal show={deleteFile} onHide={() => setDeleteFile(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Delete</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to delete this account?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="danger" onClick={handleYesClick}>
+                  Yes
+                </Button>
+                <Button variant="secondary" onClick={handleNoClick}>
+                  Cancel
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
 
           {/* Admin Dashboard */}
@@ -124,40 +169,13 @@ function TeacherAdmin() {
                           <td className="bg-light text-black">{item.email}</td>
                           <td>
                             <button
-                              className="btn btn-danger"
-                              onClick={() => setShowTeacherModal(true)}
+                              className="btn btn-danger ms-2"
+                              onClick={() => handleDeleteClick(item.id)}
                             >
-                              <span>delete</span>
+                              <span className="material-symbols-outlined">
+                                delete
+                              </span>
                             </button>
-                            {/* Delete Modal */}
-                            <Modal
-                              show={showTeacherDeleteModal}
-                              onHide={() => setShowTeacherModal(false)}
-                            >
-                              <Modal.Header closeButton>
-                                <Modal.Title>Delete Confirmation</Modal.Title>
-                              </Modal.Header>
-                              <Modal.Body>
-                                Are you sure you want to delete this student
-                                account?
-                              </Modal.Body>
-                              <Modal.Footer>
-                                <Button
-                                  variant="danger"
-                                  key={item.id}
-                                  onClick={(e) => handleDelete(item.id)}
-                                >
-                                  Yes
-                                </Button>
-                                <Button
-                                  variant="secondary"
-                                  onClick={() => setShowTeacherModal(false)}
-                                >
-                                  Cancel
-                                </Button>
-                              </Modal.Footer>
-                            </Modal>
-                            {/* End Delete Modal */}
                           </td>
                         </tr>
                       </tbody>

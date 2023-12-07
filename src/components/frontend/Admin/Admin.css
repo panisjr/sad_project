@@ -35,7 +35,7 @@ height: fit-content;
     color: #06003d;
   }
   .custom_data{
-    height: 150px;
+    height: 250px;
     width: 430px;
   }
   .courseButton{
@@ -100,3 +100,25 @@ height: fit-content;
       margin: 0;
     }
   }
+  .editor{
+    width: 900px;
+    color: black;
+  }
+  .editor a{
+    color: blue;
+  }
+  .editor a:hover{
+    text-decoration: underline;
+    color: #143f71;
+  }
+  .parsed-content table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .parsed-content th, .parsed-content td {
+    border: 1px solid #000000;
+    text-align: center;
+    padding: 8px;
+  }
+  

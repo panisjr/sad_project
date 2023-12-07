@@ -9,16 +9,13 @@ body {
   font-family: monospace;
   color: $foreground;
   height: 500px;
-  background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
 }
 
 .quiz-container {
   width: 500px;
   background: $bg;
   border-radius: 5px;
-  margin: 20px;
+  margin-left: 300px;
   padding: 30px 60px;
   border: 1px solid $primary;
   box-sizing: border-box;

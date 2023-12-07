@@ -10,6 +10,12 @@ import img from "./icons/profile1.jpg";
 import "./Student.css";
 
 function StudentDashboard() {
+  useEffect(() => {
+    document.title = "CodePulse | Student";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   // Define the data
   const handleLNUMaterials = () => {
     navigate("/lnuMaterials"); // Define the route for StudentJavaDash
@@ -38,7 +44,6 @@ function StudentDashboard() {
   const [image, setImage] = useState("");
   const [src, setSrc] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [username, setUsername] = useState("");
   const onClose = () => {
     setpview(null);
   };
@@ -52,15 +57,32 @@ function StudentDashboard() {
     setImageCrop(false);
     localStorage.setItem("pview", JSON.stringify(pview));
   };
+  // User Info
+  const [username, setUsername] = useState("");
   useEffect(() => {
-    let username = sessionStorage.getItem("username");
-    if (username === "" || username === null) {
-      navigate("/");
-    } else {
-      // Set the username in the component state
-      setUsername(username);
-    }
-  });
+    let cancelRequest = axios.CancelToken.source();
+
+    axios
+      .get("http://localhost:8081/userInfo", {
+        cancelToken: cancelRequest.token,
+      })
+      .then((res) => {
+        if (res.data.valid) {
+          setUsername(res.data.username);
+        } else {
+          // You may want to navigate to the login page only if the response is a 401 (Unauthorized) status
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    return () => {
+      cancelRequest.cancel("Component is unmounted");
+    };
+  }, []);
+
   return (
     <>
       <div className="container-fluid studentWrapper">
@@ -143,6 +165,7 @@ function StudentDashboard() {
             >
               LNU Materials
             </button>
+            <Link to="/javaDashStudent">Java Dash</Link>
             <Link
               className="btn btn-primary logoutBtn"
               onClick={() => setShowModal(true)}
@@ -171,13 +194,13 @@ function StudentDashboard() {
             </div>
             <div className="col-10 text-center">
               <button
-                className="courseButton btn btn-primary"
+                className="courseButton btn btn-light"
                 onClick={handleJavaCourse}
               >
                 <h3>JAVA - Computer Programming I</h3>
               </button>
               <button
-                className="courseButton btn btn-primary ms-3"
+                className="courseButton btn btn-light ms-3"
                 onClick={handlePythonCourse}
               >
                 <h3>PYTHON - Computer Programming II</h3>

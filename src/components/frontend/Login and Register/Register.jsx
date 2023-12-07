@@ -5,9 +5,16 @@ import { Link, useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 function Register() {
+  useEffect(() => {
+    document.title = "CodePulse | Register";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   //To navigate the user
-  const refresh = () => {
-    window.location.reload();
+  const navigate = useNavigate();
+  const admin = () => {
+    navigate("/admin");
   };
   // UseState to hold our Inputs from users
   const [id_number, setIdnumber] = useState("");
@@ -111,7 +118,7 @@ function Register() {
               </Modal.Header>
               <Modal.Body>Successfully Registered an Account!</Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={refresh}>
+                <Button variant="primary" onClick={admin}>
                   Ok
                 </Button>
               </Modal.Footer>
@@ -239,6 +246,7 @@ function Register() {
                       onChange={(event) => {
                         setRole(event.target.value);
                       }}
+                      required
                     />
                     <label
                       htmlFor="student"
@@ -261,6 +269,7 @@ function Register() {
                       onChange={(event) => {
                         setRole(event.target.value);
                       }}
+                      required
                     />
                     <label
                       htmlFor="teacher"

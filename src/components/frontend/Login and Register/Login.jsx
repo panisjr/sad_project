@@ -4,10 +4,16 @@ import "./LoginRegister.css";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faLock, faXmark } from "@fortawesome/free-solid-svg-icons";
 function Login() {
+  useEffect(() => {
+    document.title = "CodePulse | Login";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   // To show the message to the users
-  const [role, setRole] = useState("student");
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginIdnumber, setLoginIdnumber] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -17,7 +23,9 @@ function Login() {
   const refresh = () => {
     window.location.reload();
   };
-  //On click to get what the user enteredf
+
+  //On click to get what the user entered
+  axios.defaults.withCredentials = true;
   const loginUser = (e) => {
     e.preventDefault();
     if (loginIdnumber === "" || loginPassword === "") {
@@ -28,10 +36,9 @@ function Login() {
         .post("http://localhost:8081/login", {
           LoginIdnumber: loginIdnumber,
           LoginPassword: loginPassword,
-          LoginRole: role,
         })
         .then((res) => {
-          if (res.data.role && res.data.username) {
+          if (res.data.role) {
             switch (res.data.role) {
               case "student":
                 navigate("/studentDash");
@@ -41,10 +48,15 @@ function Login() {
                 navigate("/teacherDash");
                 sessionStorage.setItem("username", res.data.username);
                 break;
+              case "admin":
+                navigate("/admin");
+                break;
               default:
                 setShowLoginModal(true);
             }
           } else {
+            console.log("error logging in", res.data.id_number);
+            console.log(loginIdnumber);
             setShowLoginModal(true);
           }
         })
@@ -54,11 +66,55 @@ function Login() {
     }
   };
 
+  useEffect(() => {
+    // Options for the Intersection Observer
+    const options = {
+      root: null, // Use the viewport as the root
+      rootMargin: "0px",
+      threshold: 0.5, // Trigger when 50% of the target is visible
+    };
+
+    // Callback function when the target becomes visible
+    const callback = (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Add the 'animate' class when the target is visible
+          entry.target.classList.add("animate");
+          // Stop observing once the animation is triggered
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    // Create an Intersection Observer with the callback and options
+    const observer = new IntersectionObserver(callback, options);
+
+    // Target the element with the 'homeContainer' class
+    const target1 = document.querySelector(".side-image");
+    const target2 = document.querySelector(".right");
+    const target3 = document.querySelector(".customLoginRow");
+
+    // Start observing the target
+    if (target1) {
+      observer.observe(target1);
+      observer.observe(target2);
+      observer.observe(target3);
+    }
+
+    // Cleanup the observer when the component unmounts
+    return () => {
+      if (target1) {
+        observer.unobserve(target1);
+        observer.unobserve(target2);
+        observer.unobserve(target3);
+      }
+    };
+  }, []); // Run the effect only once on mount
   return (
     <>
       <div className="wrapper">
         <div className="container main">
-          <div className="row">
+          <div className="row customLoginRow">
             {/* Account dont exist */}
             <Modal show={showLoginModal} onHide={refresh}>
               <Modal.Header>
@@ -74,62 +130,22 @@ function Login() {
                 </Button>
               </Modal.Footer>
             </Modal>
-            <div className="col-md-6 side-image">
+            <div className="col-md-7 side-image">
               {/* Image icon */}
               {/* <img src="assets/car-icon.png" alt=""/> */}
               <div className="text">
-                <p>Welcome Back!</p>
+                <h3 className="text-black">Welcome Back!</h3>
               </div>
             </div>
-            <div className="col-md-6 right">
+            <div className="col-md-5 right">
               <div className="input-box">
                 <form>
-                  <h4 className="pb-5 text-center">Login account</h4>
-                  {/* Role choose Student or Teacher */}
-                  {/* Student */}
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="radio"
-                      id="student"
-                      name="role"
-                      value="student"
-                      className="form-check-input"
-                      checked={role === "student"}
-                      style={{ cursor: "pointer" }}
-                      onChange={(event) => {
-                        setRole(event.target.value);
-                      }}
-                    />
-                    <label
-                      htmlFor="student"
-                      className="form-check-label"
-                      style={{ cursor: "pointer" }}
-                    >
-                      Student
-                    </label>
+                  <div className="exitBtn">
+                    <Link to="/">
+                      <FontAwesomeIcon icon={faXmark} size="lg" />
+                    </Link>
                   </div>
-                  {/* Teacher */}
-                  <div className="form-check form-check-inline mb-2">
-                    <input
-                      type="radio"
-                      id="teacher"
-                      name="role"
-                      value="teacher"
-                      className="form-check-input"
-                      checked={role === "teacher"}
-                      style={{ cursor: "pointer" }}
-                      onChange={(event) => {
-                        setRole(event.target.value);
-                      }}
-                    />
-                    <label
-                      htmlFor="teacher"
-                      className="form-check-label"
-                      style={{ cursor: "pointer" }}
-                    >
-                      Teacher
-                    </label>
-                  </div>
+                  <h1 className="pb-5 text-center">Login</h1>
                   {/* ID Number Input */}
                   <div className="input-field">
                     <input
@@ -142,7 +158,13 @@ function Login() {
                         setLoginIdnumber(event.target.value);
                       }}
                     />
-                    <label htmlFor="id_number">ID Number</label>
+                    <label htmlFor="id_number">
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        style={{ marginRight: "10px" }}
+                      />
+                      ID Number
+                    </label>
                   </div>
 
                   {/* <!-- Password Input --> */}
@@ -157,7 +179,13 @@ function Login() {
                         setLoginPassword(event.target.value);
                       }}
                     />
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">
+                      <FontAwesomeIcon
+                        icon={faLock}
+                        style={{ marginRight: "10px" }}
+                      />
+                      Password
+                    </label>
                   </div>
                   <div className="input-field">
                     <button
@@ -167,16 +195,6 @@ function Login() {
                     >
                       Login
                     </button>
-                  </div>
-                  <div className="signin">
-                    <span>
-                      <Link to="/">Don't have an account?</Link>
-                    </span>
-                  </div>
-                  <div className="signin">
-                    <Link to="/" className="btn btn-outline-danger">
-                      Exit
-                    </Link>
                   </div>
                 </form>
               </div>

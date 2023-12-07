@@ -1,28 +1,24 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { resultInitalState } from "./intro";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "./index.scss";
 
-const Intro_Q = ({ questions }) => {
+const Intro_Q = ({ quizQuestionsDisplay }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
   const [result, setResult] = useState(resultInitalState);
   const [showResult, setShowResult] = useState(false);
 
-  const { question, choices, correctAnswer } = questions[currentQuestion];
-
-  const onAnwswerClick = (answer, index) => {
-    setAnswerIdx(index);
-    if (answer === correctAnswer) {
-      setAnswer(true);
-    } else {
-      setAnswer(false);
-    }
-  };
-
+  const {
+    question,
+    choices = [],
+    correctAnswer,
+  } = quizQuestionsDisplay[currentQuestion] || {};
+  const navigate = useNavigate();
   // to quit
   const [quit, setQuit] = useState(false);
   const openQuit = () => {
@@ -31,10 +27,17 @@ const Intro_Q = ({ questions }) => {
   const closeQuit = () => {
     setQuit(false);
   };
-  // to navigate
-  const navigate = useNavigate();
-  const back = () => {
-    navigate("/intro");
+  const handleQuit = () => {
+    window.location.reload();
+  };
+  const onAnwswerClick = (answer, choiceIndex) => {
+    setAnswerIdx(choiceIndex);
+    console.log(answer);
+    if (answer === correctAnswer) {
+      setAnswer(true);
+    } else {
+      setAnswer(false);
+    }
   };
   const onClickNext = () => {
     setAnswerIdx(null);
@@ -51,7 +54,7 @@ const Intro_Q = ({ questions }) => {
           }
     );
 
-    if (currentQuestion !== questions.length - 1) {
+    if (currentQuestion !== quizQuestionsDisplay.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
       setCurrentQuestion(0);
@@ -63,21 +66,28 @@ const Intro_Q = ({ questions }) => {
     setResult(resultInitalState);
     setShowResult(false);
   };
-
   return (
     <>
       <div className="quiz-container">
-        {!showResult ? (
+        {quizQuestionsDisplay.length === 0 ? (
+          <h6>The quiz is not available. Please try again later.</h6>
+        ) : !showResult ? (
           <>
+            <p>Instruction: Read the questions carefully.</p>
             <span className="active-question-no">{currentQuestion + 1}</span>
-            <span className="total-question">/{questions.length}</span>
+            <span className="total-question">
+              /{quizQuestionsDisplay.length}
+            </span>
             <h2 className="text-black">{question}</h2>
+            {/* Display added quiz quizQuestionsDisplay */}
             <ul>
-              {choices.map((choice, index) => (
+              {choices.map((choice, choiceIndex) => (
                 <li
-                  onClick={() => onAnwswerClick(choice, index)}
                   key={choice}
-                  className={answerIdx === index ? "selected-answer" : null}
+                  onClick={() => onAnwswerClick(choice, choiceIndex)}
+                  className={
+                    answerIdx === choiceIndex ? "selected-answer" : null
+                  }
                 >
                   {choice}
                 </li>
@@ -86,7 +96,9 @@ const Intro_Q = ({ questions }) => {
             <div className="footer">
               <button onClick={openQuit}>Quit</button>
               <button onClick={onClickNext} disabled={answerIdx === null}>
-                {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
+                {currentQuestion === quizQuestionsDisplay.length - 1
+                  ? "Finish"
+                  : "Next"}
               </button>
             </div>
           </>
@@ -94,7 +106,7 @@ const Intro_Q = ({ questions }) => {
           <div className="result">
             <h3>Result</h3>
             <p>
-              Total Questions: <span>{questions.length}</span>
+              Total Questions: <span>{quizQuestionsDisplay.length}</span>
             </p>
             <p>
               Total Score: <span>{result.score}</span>
@@ -106,7 +118,6 @@ const Intro_Q = ({ questions }) => {
               Wrong Answers: <span>{result.wrongAnswers}</span>
             </p>
             <button onClick={onTryAgain}>Try again</button>
-            <button onClick={back}>Exit</button>
           </div>
         )}
       </div>
@@ -117,7 +128,7 @@ const Intro_Q = ({ questions }) => {
         </Modal.Header>
         <Modal.Body>Do you want to quit?</Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={back}>
+          <Button variant="danger" onClick={handleQuit}>
             Yes
           </Button>
           <Button variant="secondary" onClick={closeQuit}>

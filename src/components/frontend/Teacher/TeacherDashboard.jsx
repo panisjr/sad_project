@@ -8,82 +8,85 @@ import { Dialog } from "primereact/dialog";
 import Avatar from "react-avatar-edit";
 import img from "./icons/profile1.jpg";
 import "./Teacher.css";
-import "material-icons/iconfont/material-icons.css";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMagnifyingGlass,
+  faTrash,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons";
 function TeacherDashboard() {
-  const navigate = useNavigate(); // Use useNavigate to get the navigation function
-
-  // Define the data
-  const [data, setData] = useState([]);
-
-  const handleLogout = () => {
-    navigate("/");
-    setShowModal(false);
-  };
-  const downloadPage = () => {
-    navigate("/download");
-  };
-  // To upload file and display profile
-  const test = () => {
-    navigate("/upload");
-  };
-
-  //This is to upload profile
+  useEffect(() => {
+    document.title = "CodePulse | Instructor";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const [profile, setProfile] = useState([]);
-  const [pview, setpview] = useState(() => {
-    // Initialize with the saved value from localStorage, or use a default value
-    const storedPView = localStorage.getItem("pview");
-    return storedPView ? JSON.parse(storedPView) : null;
-  });
+  const [data, setData] = useState([]);
+  //This is to upload profile
   const [imagecrop, setImageCrop] = useState(false);
   const [image, setImage] = useState("");
   const [src, setSrc] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState(""); // Added user ID state
-  const [username, setUsername] = useState("");
-
+  // Delete File
   const [deleteFile, setDeleteFile] = useState(false);
   const [deletedItemId, setDeletedItemId] = useState(null);
-
+  const [pview, setpview] = useState(() => {
+    // Initialize with the saved value from localStorage, or use a default value
+    const storedPView = localStorage.getItem("pview");
+    return storedPView ? JSON.parse(storedPView) : null;
+  });
+  const downloadFileAtUrl = (url) => {
+    const filename = url.split("/").pop();
+    const aTag = document.createElement("a");
+    aTag.href = url;
+    aTag.setAttribute("download", filename);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
+  };
+  const navigate = useNavigate(); // Use useNavigate to get the navigation function
+  // Define the data
+  const handleLogout = () => {
+    navigate("/");
+    setShowModal(false);
+  };
+  // To upload file and display profile
+  const test = () => {
+    navigate("/upload");
+  };
   const onClose = () => {
     setpview(null);
   };
-
   const onCrop = (view) => {
     setpview(view);
   };
-
   const saveCropImage = () => {
     setProfile([...profile, { pview }]);
     setImageCrop(false);
     localStorage.setItem(`pview_${userId}`, JSON.stringify(pview));
   };
-
   // Delete File
   const handleYesClick = async () => {
-    // Perform the delete operation using deletedItemId
     console.log(`Deleting file with ID: ${deletedItemId}`);
     try {
-      await axios
-        .delete(`http://localhost:8081/delete/${deletedItemId}`)
-        .then((res) => {
-          if (res) {
-            console.log("File deleted successfully.");
-            setDeleteFile(false);
-            window.location.reload();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setDeleteFile(false);
-        });
+      const res = await axios.delete(
+        `http://localhost:8081/delete/${deletedItemId}`
+      );
+      if (res) {
+        console.log("File deleted successfully.");
+        setData((prevData) =>
+          prevData.filter((item) => item.id !== deletedItemId)
+        );
+        // Update your state or UI here instead of reloading the page
+        setDeleteFile(false);
+        setDeletedItemId(null);
+      }
     } catch (error) {
       console.log(error);
+      setDeleteFile(false);
     }
-
-    // Reset state after deletion
-    setDeleteFile(false);
-    setDeletedItemId(null);
   };
   const handleNoClick = () => {
     // Cancel the delete operation
@@ -94,6 +97,7 @@ function TeacherDashboard() {
     setDeleteFile(true);
     setDeletedItemId(itemId);
   };
+  // Uploaded files
   useEffect(() => {
     // Fetch data from the server using Axios
     axios
@@ -113,22 +117,65 @@ function TeacherDashboard() {
       setpview(JSON.parse(storedPView));
     }
   }, [userId]);
+  // User Info
+  const [username, setUsername] = useState("");
   useEffect(() => {
-    let username = sessionStorage.getItem("username");
-    if (username === "" || username === null) {
-      navigate("/");
-    } else {
-      // Set the username in the component state
-      setUsername(username);
-    }
+    axios
+      .get("http://localhost:8081/userInfo")
+      .then((res) => {
+        if (res.data.valid) {
+          setUsername(res.data.username);
+        } else {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
+
+  // Search Bar
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios
+        .post("http://localhost:8081/search", {
+          searchTerm,
+        })
+        .then((res) => {
+          setSearchResults(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    let timer;
+
+    if (!searchTerm) {
+      // If search term is empty, wait for 3 seconds before displaying all files
+      timer = setTimeout(() => {
+        handleSearch();
+      }, 2000);
+    } else {
+      // Otherwise, perform the search immediately
+      handleSearch();
+    }
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   return (
     <>
       {/* Student Profile Info */}
       <div className="container-fluid teacherWrapper">
         <div className="row teacherContainer">
           <div className="col-2 teacherInfo">
-            <h3 className="text-center pt-3">Teacher Profile</h3>
+            <h3 className="text-center pt-3">Instructor Profile</h3>
 
             {/* This is where you upload your profile */}
             <button className="btn">
@@ -251,17 +298,45 @@ function TeacherDashboard() {
             <div className="d-flex align-items-center">
               <h1 className="pt-4">Welcome to Dashboard!</h1>
             </div>
-            <h2 className="text-center text-black">Uploaded Files</h2>
+            <div
+              style={{
+                display: "flex",
+                width: "500px",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faMagnifyingGlass}
+                style={{
+                  color: "#000000",
+                  marginTop: "13px",
+                  marginRight: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={handleSearch}
+              />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                id="search-bar"
+                placeholder="What can I help you with today?"
+                style={{ paddingLeft: "10px", flex: "1" }}
+              />
+            </div>
             <div className="tableCustom">
+              <h2 className="text-center text-black">Uploaded Files</h2>
               <table
                 className="table table-bordered table-striped"
                 style={{
-                  width: "700px",
+                  width: "1000px",
                 }}
               >
                 <thead>
                   <tr>
+                    <th className="bg-warning text-center">Title</th>
                     <th className="bg-warning text-center">File Name</th>
+                    <th className="bg-warning text-center">Uploaded By:</th>
+                    <th className="bg-warning text-center">Date</th>
                     <th className="bg-warning"></th>
                   </tr>
                 </thead>
@@ -269,38 +344,35 @@ function TeacherDashboard() {
                   <tbody>
                     <tr>
                       <td className="text-center">No Uploaded File</td>
+                      <td className="text-center">No Uploaded File</td>
+                      <td className="text-center">No Uploaded File</td>
+                      <td className="text-center">No Uploaded File</td>
                     </tr>
                   </tbody>
                 ) : (
-                  data.map((item) => (
+                  searchResults.map((item) => (
                     <tbody>
-                      <tr className="text-left">
-                        <td
-                          key={item.filename}
-                          className="d-flex justify-content-between"
-                        >
-                          <a
-                            className="text-black"
-                            href={`backend/uploads/${item.filename}`}
-                            download={item.filename}
-                          >
-                            {item.filename}
-                          </a>
-                        </td>
+                      <tr className="text-center fileList">
+                        <td>{item.title}</td>
+                        <td key={item.filename}>{item.filename}</td>
+                        <td>{item.instructors_name}</td>
+                        <td>{item.date}</td>
                         <td>
                           <button
                             className="btn btn-success"
-                            onClick={downloadPage}
+                            onClick={() =>
+                              downloadFileAtUrl(
+                                `http://localhost:8081/uploads/${item.filename}`
+                              )
+                            }
                           >
-                            Download
+                            <FontAwesomeIcon icon={faDownload} />
                           </button>
                           <button
                             className="btn btn-danger ms-2"
                             onClick={() => handleDeleteClick(item.id)}
                           >
-                            <span className="material-symbols-outlined">
-                              delete
-                            </span>
+                            <FontAwesomeIcon icon={faTrash} />
                           </button>
                         </td>
                       </tr>

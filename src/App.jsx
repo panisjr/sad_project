@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "material-icons/iconfont/material-icons.css";
 import Login from "./components/frontend/Login and Register/Login";
 import Register from "./components/frontend/Login and Register/Register";
 import StudentDashboard from "./components/frontend/Student/StudentDashboard";
@@ -20,11 +19,9 @@ import Variables from "./components/frontend/Student/java/Variables";
 import Expression from "./components/frontend/Student/java/Expression";
 import Operators_Decision from "./components/frontend/Student/java/Operators_Decision";
 import Loops_Iteration from "./components/frontend/Student/java/Loops_Iteration";
-import Arrays from "./components/frontend/Student/java/Arrays";
 import Meth from "./components/frontend/Student/java/Meth";
 import Intro from "./components/frontend/Student/java/Intro";
 // Java Quiz
-import { jsQuizz } from "./components/frontend/Student/java/quiz/Intro/intro";
 import Intro_Q from "./components/frontend/Student/java/quiz/Intro/Intro_Q";
 // PYTHON MODULES
 import DataPy from "./components/frontend/Student/python/DataPy";
@@ -56,7 +53,7 @@ import Download from "./components/frontend/Teacher/Download";
 // Landing Page
 import LandingPage from "./components/frontend/LandingPage/LandingPage";
 import LNUMaterials from "./components/frontend/Student/LNUMaterials";
-
+import JavaDashStudent from "./components/frontend/Student/JavaDashStudent";
 function App() {
   return (
     <>
@@ -115,11 +112,11 @@ function App() {
           <Route path="/upload" element={<Upload />}>
             Upload
           </Route>
+          <Route path="/javaDashStudent" element={<JavaDashStudent />}>
+            Java Dash Student
+          </Route>
 
           {/* This is the route for java pages */}
-          <Route path="/arrays" element={<Arrays />}>
-            Arrays
-          </Route>
           <Route path="/data" element={<Data />}>
             Data
           </Route>
@@ -148,10 +145,7 @@ function App() {
             Intro
           </Route>
 
-          <Route
-            path="/introQuiz"
-            element={<Intro_Q questions={jsQuizz.questions} />}
-          ></Route>
+          <Route path="/introQuiz" element={<Intro_Q />}></Route>
 
           {/* This is the route for python pages */}
           <Route path="/studentPython" element={<StudentPyDash />}>
