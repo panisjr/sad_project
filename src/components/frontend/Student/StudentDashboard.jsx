@@ -7,6 +7,14 @@ import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import Avatar from "react-avatar-edit";
 import img from "./icons/profile1.jpg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleUser,
+  faIdBadge,
+  faChevronRight,
+  faChevronLeft,
+  faArrowRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import "./Student.css";
 
 function StudentDashboard() {
@@ -16,10 +24,6 @@ function StudentDashboard() {
       // Cleanup, if necessary
     };
   }, []);
-  // Define the data
-  const handleLNUMaterials = () => {
-    navigate("/lnuMaterials"); // Define the route for StudentJavaDash
-  };
   const handleJavaCourse = () => {
     navigate("/studentJava"); // Define the route for StudentJavaDash
   };
@@ -59,6 +63,7 @@ function StudentDashboard() {
   };
   // User Info
   const [username, setUsername] = useState("");
+  const [idNumber, setIDNumber] = useState("");
   useEffect(() => {
     let cancelRequest = axios.CancelToken.source();
 
@@ -69,6 +74,7 @@ function StudentDashboard() {
       .then((res) => {
         if (res.data.valid) {
           setUsername(res.data.username);
+          setIDNumber(res.data.id_number);
         } else {
           // You may want to navigate to the login page only if the response is a 401 (Unauthorized) status
           navigate("/login");
@@ -88,17 +94,21 @@ function StudentDashboard() {
       <div className="container-fluid studentWrapper">
         <div className="row studentContainer">
           <div className="col-2 text-center studentInfo">
-            <h3 className="text-center pt-3">Student Profile</h3>
-            <button className="btn">
+            {/* <div>
+              <img src={logo} alt="Website Logo" className="adminLogo" />
+              <h5 className="adminLogoName">CodePulse</h5>
+            </div> */}
+            <div>
               <img
                 style={{
-                  width: "150px",
-                  height: "150px",
-                  marginTop: "80px",
-                  marginLeft: "10px",
+                  width: "130px",
+                  height: "130px",
+                  marginTop: "30px",
+                  marginLeft: "28px",
                   borderRadius: "50%",
                   objectFit: "cover",
-                  border: "4px solid #0a0064",
+                  cursor: "pointer",
+                  border: "2px solid white",
                 }}
                 onClick={() => setImageCrop(true)}
                 src={pview || img}
@@ -155,23 +165,19 @@ function StudentDashboard() {
                   }}
                 />
               </div>
-            </button>
-            <div className="userName text-center">
+            </div>
+            <div className="studentName text-center">
               <p>{username}</p>
             </div>
-            <button
-              className="btn btn-primary lnuMaterials"
-              onClick={handleLNUMaterials}
-            >
-              LNU Materials
-            </button>
-            <Link to="/javaDashStudent">Java Dash</Link>
-            <Link
-              className="btn btn-primary logoutBtn"
-              onClick={() => setShowModal(true)}
-            >
-              Logout
-            </Link>
+            <label htmlFor="">
+              <FontAwesomeIcon
+                icon={faIdBadge}
+                size="xl"
+                style={{ marginRight: "10px" }}
+              />
+              {idNumber}
+            </label>
+
             {/* Logout Message */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
@@ -179,7 +185,7 @@ function StudentDashboard() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleLogout}>
+                <Button variant="success" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -188,23 +194,38 @@ function StudentDashboard() {
               </Modal.Footer>
             </Modal>
           </div>
-          <div className="col-10">
-            <div className="d-flex align-items-center">
-              <h1 className="pt-4">Welcome to Dashboard!</h1>
-            </div>
-            <div className="col-10 text-center">
-              <button
-                className="courseButton btn btn-light"
-                onClick={handleJavaCourse}
-              >
-                <h3>JAVA - Computer Programming I</h3>
-              </button>
-              <button
-                className="courseButton btn btn-light ms-3"
-                onClick={handlePythonCourse}
-              >
-                <h3>PYTHON - Computer Programming II</h3>
-              </button>
+          <div className="col-10 studentContent">
+            <div className="row studentContentRow">
+              <nav className="adminNavbar">
+                <div>
+                  <Link className="btn btn-light" to="/lnuMaterials">
+                    LNU Materials <FontAwesomeIcon icon={faChevronRight} />
+                  </Link>
+                </div>
+
+                {/* Logout button */}
+                <div>
+                  <Link
+                    className="btn btn-outline-light"
+                    onClick={() => setShowModal(true)}
+                  >
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                  </Link>
+                </div>
+              </nav>
+              <div>
+                <h3>Welcome Back!</h3>
+              </div>
+              <div className="row courses">
+                <Link
+                  className="d-flex col-md-2 javaIcon1"
+                  to="/studentJava"
+                ></Link>
+                <Link
+                  className="col-md-2 pythonIcon"
+                  to="/studentPython"
+                ></Link>
+              </div>
             </div>
           </div>
         </div>

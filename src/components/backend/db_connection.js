@@ -90,8 +90,8 @@ app.post('/register', (req, res) => {
 });
 // User Info
 app.get('/userInfo', (req, res) => {
-  if (req.session.username) {
-    return res.json({ valid: true, username: req.session.username })
+  if (req.session.username && req.session.id_number) {
+    return res.json({ valid: true, username: req.session.username, id_number: req.session.id_number })
   } else {
     return res.json({ valid: false })
   }
@@ -128,6 +128,7 @@ app.post('/login', (req, res) => {
           Bugsnag.notify('Successfully logged in');
           // Store user information in the session
           req.session.username = results[0].username;
+          req.session.id_number = results[0].id_number;
           res.json({
             role: results[0].role,
             username: results[0].username,
@@ -297,45 +298,39 @@ app.post('/upload', upload.single('file'), (req, res) => {
     return res.json({ status: 'Success' });
   });
 });
+// To get the total Java and Python Courses
+// Java
+app.get('/totalJavaCourses', (req, res) => {
+  const sql = 'SELECT COUNT(*) as total_JavaCourses FROM courses WHERE course = "java"';
 
-// Search Bar
-// app.post('/search', (req, res) => {
-//   const { searchCriteria, searchTerm } = req.body;
-//   let query;
+  DbConnection.query(sql, (err, result) => {
+    if (err) {
+      Bugsnag.notify(err);
 
-//   if (!searchTerm) {
-//     // If search term is empty, retrieve all files
-//     query = 'SELECT * FROM files';
-//   } else {
-//     // Otherwise, perform the search based on the specified criteria
-//     switch (searchCriteria) {
-//       case 'filename':
-//         query = `SELECT * FROM files WHERE filename LIKE '%${searchTerm}%'`;
-//         break;
-//       case 'instructors_name':
-//         query = `SELECT * FROM files WHERE instructors_name LIKE '%${searchTerm}%'`;
-//         break;
-//       case 'date':
-//         query = `SELECT * FROM files WHERE date LIKE '%${searchTerm}%'`;
-//         break;
-//       case 'title':
-//         query = `SELECT * FROM files WHERE title LIKE '%${searchTerm}%'`;
-//         break;
-//       default:
-//         res.status(400).json({ error: 'Invalid search criteria' });
-//         return;
-//     }
-//   }
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      const totalJavaCourses = result[0].total_JavaCourses;
+      res.json({ totalJavaCourses });
+    }
+  });
+});
+// Python
+app.get('/totalPythonCourses', (req, res) => {
+  const sql = 'SELECT COUNT(*) as total_PythonCourses FROM courses WHERE course = "python"';
 
-//   DbConnection.query(query, (err, result) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).json({ error: 'Internal server error' });
-//       return;
-//     }
-//     res.json(result);
-//   });
-// });
+  DbConnection.query(sql, (err, result) => {
+    if (err) {
+      Bugsnag.notify(err);
+
+      res.status(500).json({ message: 'Database error' });
+    } else {
+      const totalPythonCourses = result[0].total_PythonCourses;
+      res.json({ totalPythonCourses });
+    }
+  });
+});
+// End
+// Search Bar for Files
 app.post('/search', (req, res) => {
   const { searchTerm } = req.body;
 
@@ -370,7 +365,74 @@ app.post('/search', (req, res) => {
     });
   }
 });
+// Search Student and Teacher Account
+app.post('/studentSearchAccount', (req, res) => {
+  const { searchTerm } = req.body;
+  if (!searchTerm) {
+    // If search term is empty, retrieve all files
+    const query = 'SELECT * FROM users WHERE role = "student"';
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  } else {
+    // Otherwise, dynamically construct the query to search in all columns
+    const query = `
+    SELECT * FROM users
+    WHERE role = "student" AND
+    (id_number LIKE '%${searchTerm}%' OR 
+          username LIKE '%${searchTerm}%' OR 
+          email LIKE '%${searchTerm}%')
+    `;
 
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  }
+});
+app.post('/teacherSearchAccount', (req, res) => {
+  const { searchTerm } = req.body;
+  if (!searchTerm) {
+    // If search term is empty, retrieve all files
+    const query = 'SELECT * FROM users WHERE role = "teacher"';
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  } else {
+    // Otherwise, dynamically construct the query to search in all columns
+    const query = `
+      SELECT * FROM users
+      WHERE role = "teacher" AND
+      (id_number LIKE '%${searchTerm}%' OR 
+            username LIKE '%${searchTerm}%' OR 
+            email LIKE '%${searchTerm}%')
+    `;
+
+    DbConnection.query(query, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(result);
+    });
+  }
+});
+// End
 // Create a topic
 app.post('/addCourse', (req, res) => {
   const { title, chosenCourse } = req.body;

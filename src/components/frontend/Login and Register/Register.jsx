@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./LoginRegister.css";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faIdBadge,
+  faEnvelope,
+  faLock,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 function Register() {
   useEffect(() => {
     document.title = "CodePulse | Register";
@@ -14,7 +22,13 @@ function Register() {
   //To navigate the user
   const navigate = useNavigate();
   const admin = () => {
-    navigate("/admin");
+    setShowSuccessful(false);
+    setIdnumber("");
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setRole("student");
+    window.location.reload();
   };
   // UseState to hold our Inputs from users
   const [id_number, setIdnumber] = useState("");
@@ -88,13 +102,14 @@ function Register() {
         })
         .then((res) => {
           if (res) {
-            // Usage in createUser function
-            setShowSuccessful(true);
             // To clear the field after the input
             setIdnumber("");
             setUsername("");
             setEmail("");
             setPassword("");
+            setRole("student");
+            // Usage in createUser function
+            setShowSuccessful(true);
           }
         })
         .catch((error) => {
@@ -105,11 +120,55 @@ function Register() {
     }
   };
 
+  useEffect(() => {
+    // Options for the Intersection Observer
+    const options = {
+      root: null, // Use the viewport as the root
+      rootMargin: "0px",
+      threshold: 0.5, // Trigger when 50% of the target is visible
+    };
+
+    // Callback function when the target becomes visible
+    const callback = (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Add the 'animate' class when the target is visible
+          entry.target.classList.add("animate");
+          // Stop observing once the animation is triggered
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    // Create an Intersection Observer with the callback and options
+    const observer = new IntersectionObserver(callback, options);
+
+    // Target the element with the 'homeContainer' class
+    const target1 = document.querySelector(".side-image");
+    const target2 = document.querySelector(".right");
+    const target3 = document.querySelector(".customLoginRow");
+
+    // Start observing the target
+    if (target1) {
+      observer.observe(target1);
+      observer.observe(target2);
+      observer.observe(target3);
+    }
+
+    // Cleanup the observer when the component unmounts
+    return () => {
+      if (target1) {
+        observer.unobserve(target1);
+        observer.unobserve(target2);
+        observer.unobserve(target3);
+      }
+    };
+  }, []); // Run the effect only once on mount
   return (
     <>
       <div className="wrapper">
         <div className="container main">
-          <div className="row">
+          <div className="row customLoginRow">
             {/* This is to show the error message and success message */}
             {/* Account Successfully Registered */}
             <Modal show={showSuccessfulModal} onHide={handleHide}>
@@ -187,8 +246,17 @@ function Register() {
             </div>
             <div className="col-md-6 right">
               <div className="input-box">
-                <h4 className="pb-5 text-center">Register account</h4>
                 <form onSubmit={handleRegistration}>
+                  <div className="exitBtn">
+                    <Link to="/admin">
+                      <FontAwesomeIcon
+                        className="exitBtn"
+                        icon={faXmark}
+                        size="lg"
+                      />
+                    </Link>
+                  </div>
+                  <h4 className="pb-5 text-center">Register account</h4>
                   {/* ID Number Input */}
                   <div className="input-field">
                     <input
@@ -201,7 +269,14 @@ function Register() {
                       autoComplete="off"
                       required
                     />
-                    <label htmlFor="id_number">ID Number</label>
+                    <label htmlFor="id_number">
+                      <FontAwesomeIcon
+                        icon={faIdBadge}
+                        size="lg"
+                        style={{ marginRight: "10px" }}
+                      />
+                      ID Number
+                    </label>
                   </div>
                   {/* <!-- Name Input --> */}
                   <div className="input-field">
@@ -215,7 +290,14 @@ function Register() {
                       autoComplete="off"
                       required
                     />
-                    <label htmlFor="username">Name</label>
+                    <label htmlFor="username">
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        size="lg"
+                        style={{ marginRight: "10px" }}
+                      />
+                      Name
+                    </label>
                   </div>
                   {/* <!-- Email Input  --> */}
                   <div className="input-field">
@@ -229,7 +311,14 @@ function Register() {
                       autoComplete="off"
                       required
                     />
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">
+                      <FontAwesomeIcon
+                        icon={faEnvelope}
+                        size="lg"
+                        style={{ marginRight: "10px" }}
+                      />
+                      Email
+                    </label>
                   </div>
 
                   {/* Role choose Student or Teacher */}
@@ -291,7 +380,14 @@ function Register() {
                       }}
                       required
                     />
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">
+                      <FontAwesomeIcon
+                        icon={faLock}
+                        size="lg"
+                        style={{ marginRight: "10px" }}
+                      />
+                      Password
+                    </label>
                   </div>
 
                   {/* <!----------------------Button-----------------------> */}
@@ -299,11 +395,6 @@ function Register() {
                     <button type="submit" className="submit">
                       Register
                     </button>
-                  </div>
-                  <div className="signin">
-                    <Link to="/admin" className="btn btn-outline-danger">
-                      Exit
-                    </Link>
                   </div>
                 </form>
               </div>

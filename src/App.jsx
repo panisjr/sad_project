@@ -44,8 +44,6 @@ import LNUMaterialsAdmin from "./components/frontend/Admin/LNUMaterialsAdmin";
 import AddCourse from "./components/frontend/Admin/AddCourse";
 import StudentAdmin from "./components/frontend/Admin/StudentAdmin";
 import TeacherAdmin from "./components/frontend/Admin/TeacherAdmin";
-import AddTopic from "./components/frontend/Admin/AddTopic";
-import EditTopic from "./components/frontend/Admin/EditTopic";
 // End Admin Page
 //Upload page
 import Upload from "./components/frontend/Teacher/Upload";
@@ -97,12 +95,6 @@ function App() {
           </Route>
           <Route path="/adminLoginPage" element={<AdminLoginPage />}>
             Admin Login Page
-          </Route>
-          <Route path="/addTopic" element={<AddTopic />}>
-            Add Topic Page
-          </Route>
-          <Route path="/editTopic" element={<EditTopic />}>
-            Edit Topic Page
           </Route>
           {/* End Admin Page */}
           {/* Student Page */}

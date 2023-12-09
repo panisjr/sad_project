@@ -13,6 +13,11 @@ import {
   faMagnifyingGlass,
   faTrash,
   faDownload,
+  faCircleUser,
+  faIdBadge,
+  faChevronRight,
+  faChevronLeft,
+  faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 function TeacherDashboard() {
   useEffect(() => {
@@ -51,10 +56,6 @@ function TeacherDashboard() {
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
-  };
-  // To upload file and display profile
-  const test = () => {
-    navigate("/upload");
   };
   const onClose = () => {
     setpview(null);
@@ -119,20 +120,30 @@ function TeacherDashboard() {
   }, [userId]);
   // User Info
   const [username, setUsername] = useState("");
+  const [idNumber, setIDNumber] = useState("");
   useEffect(() => {
+    let cancelRequest = axios.CancelToken.source();
+
     axios
-      .get("http://localhost:8081/userInfo")
+      .get("http://localhost:8081/userInfo", {
+        cancelToken: cancelRequest.token,
+      })
       .then((res) => {
         if (res.data.valid) {
           setUsername(res.data.username);
+          setIDNumber(res.data.id_number);
         } else {
+          // You may want to navigate to the login page only if the response is a 401 (Unauthorized) status
           navigate("/login");
         }
       })
       .catch((err) => {
         console.log(err);
       });
-  });
+    return () => {
+      cancelRequest.cancel("Component is unmounted");
+    };
+  }, []);
 
   // Search Bar
   const [searchTerm, setSearchTerm] = useState("");
@@ -174,32 +185,32 @@ function TeacherDashboard() {
       {/* Student Profile Info */}
       <div className="container-fluid teacherWrapper">
         <div className="row teacherContainer">
-          <div className="col-2 teacherInfo">
-            <h3 className="text-center pt-3">Instructor Profile</h3>
-
+          <div className="col-2 text-center teacherInfo">
             {/* This is where you upload your profile */}
-            <button className="btn">
+            <div>
               <img
                 style={{
-                  width: "150px",
-                  height: "150px",
-                  marginTop: "80px",
-                  marginLeft: "10px",
+                  width: "130px",
+                  height: "130px",
+                  marginTop: "30px",
+                  marginLeft: "28px",
                   borderRadius: "50%",
                   objectFit: "cover",
-                  border: "4px solid #0a0064",
+                  cursor: "pointer",
+                  border: "2px solid white",
                 }}
                 onClick={() => setImageCrop(true)}
                 src={pview || img}
                 alt=""
               />
+
               <div className="upload">
                 <Dialog
                   visible={imagecrop}
                   header={() => (
                     <p
                       htmlFor=""
-                      className="text-2xl font-semibold textColor dialog"
+                      className="text-2xl text-center font-semibold dialog"
                     >
                       Update Profile
                     </p>
@@ -222,7 +233,6 @@ function TeacherDashboard() {
                           className="btn btn-success m-3"
                           onClick={saveCropImage}
                           label="Save"
-                          icon="pi pi-check"
                         >
                           Save
                         </button>
@@ -244,21 +254,18 @@ function TeacherDashboard() {
                   }}
                 />
               </div>
-            </button>
+            </div>
             <div className="userName text-center">
               <p>{username}</p>
             </div>
-            {/* Upload File */}
-            <button onClick={test} className="btn btn-primary uploadBtn">
-              Upload File
-            </button>
-            {/* Logout button */}
-            <Link
-              className="btn btn-primary logoutBtn"
-              onClick={() => setShowModal(true)}
-            >
-              Logout
-            </Link>
+            <label htmlFor="">
+              <FontAwesomeIcon
+                icon={faIdBadge}
+                size="xl"
+                style={{ marginRight: "10px" }}
+              />
+              {idNumber}
+            </label>
             {/* Logout Message */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
@@ -266,7 +273,7 @@ function TeacherDashboard() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleLogout}>
+                <Button variant="success" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -294,92 +301,107 @@ function TeacherDashboard() {
           </div>
 
           {/* Student Dashboard */}
-          <div className="col-10">
-            <div className="d-flex align-items-center">
-              <h1 className="pt-4">Welcome to Dashboard!</h1>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                width: "500px",
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faMagnifyingGlass}
-                style={{
-                  color: "#000000",
-                  marginTop: "13px",
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={handleSearch}
-              />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                id="search-bar"
-                placeholder="What can I help you with today?"
-                style={{ paddingLeft: "10px", flex: "1" }}
-              />
-            </div>
-            <div className="tableCustom">
+          <div className="col-10 teacherContent">
+            <div className="row teacherContentRow">
+              <nav className="adminNavbar">
+                {/* Upload File */}
+                <div>
+                  <Link className="btn btn-light" to="/upload">
+                    Upload File <FontAwesomeIcon icon={faChevronRight} />
+                  </Link>
+                </div>
+
+                {/* Logout button */}
+                <div>
+                  <Link
+                    className="btn btn-outline-light"
+                    onClick={() => setShowModal(true)}
+                  >
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                  </Link>
+                </div>
+              </nav>
+              <div>
+                <h3>Welcome Back!</h3>
+              </div>
+              {/* Search Bar */}
+              <form className="form-group searchBar">
+                <div className="input-group ">
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search file"
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      onClick={handleSearch}
+                    />
+                  </span>
+                </div>
+              </form>
               <h2 className="text-center text-black">Uploaded Files</h2>
-              <table
-                className="table table-bordered table-striped"
-                style={{
-                  width: "1000px",
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th className="bg-warning text-center">Title</th>
-                    <th className="bg-warning text-center">File Name</th>
-                    <th className="bg-warning text-center">Uploaded By:</th>
-                    <th className="bg-warning text-center">Date</th>
-                    <th className="bg-warning"></th>
-                  </tr>
-                </thead>
-                {data.length === 0 ? (
-                  <tbody>
+              <div className="tableCustom">
+                <table
+                  className="table table-bordered"
+                  style={{
+                    width: "1035px",
+                  }}
+                >
+                  <thead>
                     <tr>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
+                      <th className="bg-secondary text-center">Title</th>
+                      <th className="bg-secondary text-center">File Name</th>
+                      <th className="bg-secondary text-center">Uploaded By:</th>
+                      <th className="bg-secondary text-center">Date</th>
+                      <th className="bg-secondary"></th>
                     </tr>
-                  </tbody>
-                ) : (
-                  searchResults.map((item) => (
+                  </thead>
+                  {data.length === 0 ? (
                     <tbody>
-                      <tr className="text-center fileList">
-                        <td>{item.title}</td>
-                        <td key={item.filename}>{item.filename}</td>
-                        <td>{item.instructors_name}</td>
-                        <td>{item.date}</td>
-                        <td>
-                          <button
-                            className="btn btn-success"
-                            onClick={() =>
-                              downloadFileAtUrl(
-                                `http://localhost:8081/uploads/${item.filename}`
-                              )
-                            }
-                          >
-                            <FontAwesomeIcon icon={faDownload} />
-                          </button>
-                          <button
-                            className="btn btn-danger ms-2"
-                            onClick={() => handleDeleteClick(item.id)}
-                          >
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
+                      <tr>
+                        <td className="text-center" colSpan="5">
+                          No Uploaded File
                         </td>
                       </tr>
                     </tbody>
-                  ))
-                )}
-              </table>
+                  ) : (
+                    searchResults.map((item) => (
+                      <tbody>
+                        <tr className="text-center fileList">
+                          <td>{item.title}</td>
+                          <td key={item.filename}>{item.filename}</td>
+                          <td>{item.instructors_name}</td>
+                          <td>{item.date}</td>
+                          <td>
+                            <Link
+                              className="faDownload"
+                              onClick={() =>
+                                downloadFileAtUrl(
+                                  `http://localhost:8081/uploads/${item.filename}`
+                                )
+                              }
+                            >
+                              <FontAwesomeIcon icon={faDownload} size="xl" />
+                            </Link>
+                            <Link
+                              className="faTrash ms-2"
+                              onClick={() => handleDeleteClick(item.id)}
+                            >
+                              <FontAwesomeIcon icon={faTrash} size="xl" />
+                            </Link>
+                          </td>
+                        </tr>
+                      </tbody>
+                    ))
+                  )}
+                </table>
+              </div>
             </div>
           </div>
         </div>

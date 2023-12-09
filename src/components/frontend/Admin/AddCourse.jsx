@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleUser,
+  faChevronRight,
+  faTrash,
+  faChevronLeft,
+  faArrowRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
+import logo from "./icons/program.png";
 import "./Admin.css";
+import { Table } from "react-bootstrap";
 function AddCourse() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState([]);
@@ -30,7 +37,14 @@ function AddCourse() {
   const [deletedItemId, setDeletedItemId] = useState(null);
   // To select a Java or Python Course
   const [chosenCourse, setChosenCourse] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [addQuizErrorModal, setAddQuizErrorModal] = useState(false);
 
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    navigate("/");
+    setShowModal(false);
+  };
   const handleCourseChange = (event) => {
     setChosenCourse(event.target.value);
   };
@@ -49,10 +63,14 @@ function AddCourse() {
     // Enable editing mode
     setIsEditing(true);
   };
+  const handleEditCancel = () => {
+    setIsEditing(false);
+  };
   const handleHide = () => {
     // Enable editing mode
     setSelectedCourse(false);
     setIsEditing(false);
+    setQuizQuestions([]);
   };
   // End of Content Edit
   const handleAddCourse = () => {
@@ -153,7 +171,6 @@ function AddCourse() {
       quizQuestion.question &&
       quizQuestion.choices.some((choice) => choice.trim() !== "") &&
       quizQuestion.correctAnswer;
-
     if (areFieldsValid) {
       // Check if it's an edit operation
       if (editedQuestionIndex !== null) {
@@ -181,7 +198,7 @@ function AddCourse() {
       // Set the flag to true when the button is clicked
       setAddQuizQuestionClicked(true);
     } else {
-      // Handle validation error (e.g., show a message to the user)
+      setAddQuizErrorModal(true);
       console.error("Please fill in all fields for the quiz question.");
     }
   };
@@ -228,12 +245,14 @@ function AddCourse() {
     setQuizQuestion(question);
     // Clear the edited question index
     setEditedQuestionIndex(null);
+    setQuizQuestionsDisplay([]);
   };
   // THIS IS TO DISPLAY THE QUIZ QUESTIONS
   const [quizQuestionsDisplay, setQuizQuestionsDisplay] = useState([]);
   useEffect(() => {
     setQuizQuestionsDisplay([]);
   }, [selectedCourseId]);
+  // To get the quiz question based on the selected ID
   useEffect(() => {
     // Fetch quiz questions for the selected course
     if (selectedCourseId) {
@@ -273,6 +292,7 @@ function AddCourse() {
   }, [selectedCourseId]);
   // this is to get the courses data
   const [courses, setCourses] = useState([]);
+  // To get all the courses data in database
   useEffect(() => {
     // Fetch courses from the server
     axios
@@ -304,251 +324,459 @@ function AddCourse() {
   // End
   return (
     <>
-      <div>
-        <h1>Topics</h1>
-        <form onSubmit={handleAddCourse}>
-          <div>
-            <label htmlFor="course">Select a course:</label>
-            <select
-              id="course"
-              name="course"
-              onChange={handleCourseChange}
-              value={chosenCourse}
-              required
-            >
-              <option value="" disabled hidden>
-                Choose a course
-              </option>
-              <option value="java">Java Course</option>
-              <option value="python">Python Course</option>
-            </select>
+      <div className="container-fluid adminDashWrapper">
+        <div className="row admin_container">
+          <div className="col-2 text-center adminInfo">
+            <div className="logoContainer">
+              <img src={logo} alt="Website Logo" className="adminLogo" />
+              <h5 className="adminLogoName">CodePulse</h5>
+            </div>
+            <h3 className="pt-5">Courses</h3>
+            <div className=" d-grid align-items-center justify-content-center">
+              <Link className="btn btn-light m-2 mt-5" to="/admin">
+                <FontAwesomeIcon icon={faChevronLeft} /> Dashboard
+              </Link>
+            </div>
           </div>
-          {/* Input for adding a new course */}
-          <div>
-            <input
-              type="text"
-              placeholder="Enter new course"
-              value={newCourse}
-              onChange={(e) => setNewCourse(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" name="submit">
-            Add Course
-          </button>
-        </form>
-        {/* Displaying Java and Python Courses */}
-        {!selectedCourse && (
-          <div>
-            <h5>Java Courses</h5>
-            <ul>
-              {javaCourses.length === 0 ? (
-                <h6>
-                  <i>Java Courses is empty</i>
-                </h6>
-              ) : (
-                javaCourses.map((course) => (
-                  <li key={course.id} onClick={() => handleCourseClick(course)}>
-                    {course.title}
-                    <button
-                      className="btn btn-danger ms-2"
-                      onClick={() => handleDeleteClick(course.id)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-            <h5>Python Courses</h5>
-            <ul>
-              {pythonCourses.length === 0 ? (
-                <h6>
-                  <i>Python Courses is empty</i>
-                </h6>
-              ) : (
-                pythonCourses.map((course) => (
-                  <li key={course.id} onClick={() => handleCourseClick(course)}>
-                    {course.title}
-                    <button
-                      className="btn btn-danger ms-2"
-                      onClick={() => handleDeleteClick(course.id)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        )}
-        {/* End */}
-        {selectedCourse && (
-          <div>
-            <button onClick={handleHide}>back</button>
-            <form onSubmit={handleSubmit}>
-              <h2 className="text-black">{selectedCourse.title}</h2>
-              <div className="editor">
-                <CKEditor
-                  editor={ClassicEditor}
-                  data={isEditing ? selectedCourse.content || "" : ""}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    setText(data);
-                  }}
-                />
-              </div>
-              <div>
-                <h2 className="text-black">New Content</h2>
-                <div
-                  className="editor parsed-content"
-                  dangerouslySetInnerHTML={{ __html: text }}
-                />
-                <h2 className="text-black">Content</h2>
-                <div
-                  className="text-black editor parsed-content"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      selectedCourse.content &&
-                      selectedCourse.content.trim() !== ""
-                        ? selectedCourse.content
-                        : "Your Content is Empty",
-                  }}
-                />
-                <div></div>
-              </div>
-            </form>
-            <button onClick={() => setShowUpdateModal(true)}>Update</button>
-            <button onClick={handleEditClick}>Edit</button>
-            {isEditing && <button onClick={handleHide}>Cancel</button>}
-            {/* Add a form for quiz questions */}
-            <div>
-              <h2 className="text-black">Add Quiz Questions</h2>
-              <div>
-                <label>Question:</label>
-                <input
-                  type="text"
-                  value={quizQuestion.question}
-                  onChange={(e) =>
-                    handleQuizQuestionChange("question", e.target.value)
-                  }
-                />
-              </div>
-              {/* Render choices dynamically based on the choices array */}
-              {quizQuestion.choices.map((choice, index) => (
-                <div key={`choice-${index}`}>
-                  <label>{`Choice ${index + 1}:`}</label>
-                  <input
-                    type="text"
-                    value={choice}
-                    onChange={(e) =>
-                      handleQuizQuestionChange("choices", e.target.value, index)
-                    }
-                  />
+          <div className="col-10 adminContent">
+            <div className="row adminContentRow">
+              <nav className="adminNavbar">
+                <div>
+                  <label htmlFor="">
+                    <FontAwesomeIcon
+                      icon={faCircleUser}
+                      size="xl"
+                      style={{ marginRight: "10px" }}
+                    />
+                    Admin
+                  </label>
                 </div>
-              ))}
-              <div>
-                <label>Correct Answer:</label>
-                <input
-                  type="text"
-                  value={quizQuestion.correctAnswer}
-                  onChange={(e) =>
-                    handleQuizQuestionChange("correctAnswer", e.target.value)
-                  }
-                />
-              </div>
-              <button onClick={handleAddQuizQuestion}>Add Quiz Question</button>
-            </div>
-            {/* Display added quiz questions */}
-            <div>
-              {quizQuestions.length > 0 ? (
-                quizQuestions.map((question, index) => (
-                  <div key={index}>
-                    <h3>Question {index + 1}:</h3>
-                    <p>{question.question}</p>
-                    {/* Map through the choices array */}
-                    {question.choices.map((choice, choiceIndex) => (
-                      <p key={`choice-${choiceIndex}`}>{`Choice ${
-                        choiceIndex + 1
-                      }: ${choice}`}</p>
-                    ))}
-                    <p>Correct Answer: {question.correctAnswer}</p>
-                    <button onClick={() => handleEditQuizQuestion(index)}>
-                      Edit
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p>Add a Quiz Question</p>
+                {/* Logout button */}
+                <div>
+                  <Link
+                    className="btn btn-outline-light"
+                    onClick={() => setShowModal(true)}
+                  >
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                  </Link>
+                </div>
+              </nav>
+              {/* This is to create course title */}
+              {!selectedCourse && (
+                <div className="courseForm">
+                  <form className="form-group " onSubmit={handleAddCourse}>
+                    <div className="input-group" style={{ width: "500px" }}>
+                      <span class="input-group-text">
+                        Select Programming Language:
+                      </span>
+                      <select
+                        className="form-select"
+                        id="course"
+                        name="course"
+                        onChange={handleCourseChange}
+                        value={chosenCourse}
+                        required
+                      >
+                        <option value="" disabled hidden>
+                          Choose a Language
+                        </option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                      </select>
+                    </div>
+                    <div
+                      className="input-group mt-2"
+                      style={{ width: "500px" }}
+                    >
+                      <input
+                        className="form-control"
+                        type="text"
+                        placeholder="Enter new course"
+                        value={newCourse}
+                        onChange={(e) => setNewCourse(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="input-group">
+                      <button className="btn courseBtn mt-3" type="submit">
+                        Add Course
+                      </button>
+                    </div>
+                  </form>
+                </div>
               )}
-            </div>
-            {/* Button to submit quiz questions */}
-            {quizQuestions.length > 0 && (
-              <button onClick={handleSubmitQuiz}>Submit Quiz Questions</button>
-            )}
-            {/* Display added quiz questions */}
-            <div>
-              {quizQuestionsDisplay.length > 0 ? (
-                quizQuestionsDisplay.map((question, index) => (
-                  <div key={index}>
-                    <h3>Question {index + 1}:</h3>
-                    <p>{question.question}</p>
-                    {/* Map through the choices array */}
-                    {question.choices.map((choice, choiceIndex) => (
-                      <p key={`choice-${choiceIndex}`}>{`Choice ${
-                        choiceIndex + 1
-                      }: ${choice}`}</p>
-                    ))}
-                    <p>Correct Answer: {question.correctAnswer}</p>
+              {/* End */}
+              {/* Displaying Java and Python Courses */}
+              {!selectedCourse && (
+                <div className="row courseTitleRow">
+                  <div className="col courseTitleColumn">
+                    <table className="table-bordered customBorder">
+                      <thead>
+                        <tr>
+                          <th className="p-2" colSpan="2">
+                            <h5 className="text-center">Java Courses</h5>
+                          </th>
+                        </tr>
+                      </thead>
+                      {javaCourses.length === 0 ? (
+                        <tbody>
+                          <tr>
+                            <td>
+                              <i>Java Courses is empty</i>
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        javaCourses.map((course) => (
+                          <tbody>
+                            <tr key={course.id}>
+                              <td
+                                className="courseTitle"
+                                onClick={() => handleCourseClick(course)}
+                              >
+                                {course.title}
+                              </td>
+                              <td className="text-center">
+                                <Link
+                                  onClick={() => handleDeleteClick(course.id)}
+                                >
+                                  <FontAwesomeIcon
+                                    className="faTrash"
+                                    icon={faTrash}
+                                  />
+                                </Link>
+                              </td>
+                            </tr>
+                          </tbody>
+                        ))
+                      )}
+                    </table>
+                  </div>
+                  <div className="col courseTitleColumn ms-3">
+                    <table className="table-bordered customBorder">
+                      <thead>
+                        <tr>
+                          <th className="p-2" colSpan="2">
+                            <h5 className="text-center">Python Courses</h5>
+                          </th>
+                        </tr>
+                      </thead>
+                      {pythonCourses.length === 0 ? (
+                        <tbody>
+                          <tr>
+                            <td>
+                              <i>Python Courses is empty</i>
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        pythonCourses.map((course) => (
+                          <tbody>
+                            <tr key={course.id}>
+                              <td
+                                className="courseTitle"
+                                onClick={() => handleCourseClick(course)}
+                              >
+                                {course.title}
+                              </td>
+                              <td className="text-center">
+                                <Link
+                                  onClick={() => handleDeleteClick(course.id)}
+                                >
+                                  <FontAwesomeIcon
+                                    className="faTrash"
+                                    icon={faTrash}
+                                  />
+                                </Link>
+                              </td>
+                            </tr>
+                          </tbody>
+                        ))
+                      )}
+                    </table>
+                  </div>
+                </div>
+              )}
+              {/* End */}
+              {/* Content */}
+              {selectedCourse && (
+                <div>
+                  <Link className="btn courseBtn mt-2" onClick={handleHide}>
+                    <FontAwesomeIcon className="mt-1" icon={faChevronLeft} />
+                    {"  "}
+                    back
+                  </Link>
+                  <form onSubmit={handleSubmit}>
+                    <h4 className="text-black mt-3">{selectedCourse.title}</h4>
+                    <div className="editor">
+                      <CKEditor
+                        editor={ClassicEditor}
+                        data={isEditing ? selectedCourse.content || "" : ""}
+                        onChange={(event, editor) => {
+                          const data = editor.getData();
+                          setText(data);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-black mt-3 ">New Content</h4>
+                      <div
+                        className="editor parsed-content contentBorder"
+                        dangerouslySetInnerHTML={{ __html: text }}
+                      />
+                      <h4 className="text-black mt-3">Content</h4>
+                      <div
+                        className="text-black editor parsed-content contentBorder"
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            selectedCourse.content &&
+                            selectedCourse.content.trim() !== ""
+                              ? selectedCourse.content
+                              : "<i>Your Content is Empty </i>",
+                        }}
+                      />
+                    </div>
+                  </form>
+                  <button
+                    className="btn courseBtn mt-2"
+                    onClick={() => setShowUpdateModal(true)}
+                  >
+                    Update
+                  </button>
+                  {selectedCourse.content && (
                     <button
-                      onClick={() => handleEditQuizQuestionDisplay(question)}
+                      className="btn courseBtn mt-2 ms-2"
+                      onClick={handleEditClick}
                     >
                       Edit
                     </button>
+                  )}
+                  {isEditing && (
+                    <button
+                      className="btn courseBtn mt-2 ms-2"
+                      onClick={handleEditCancel}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  {/* Add a form for quiz questions */}
+                  <div>
+                    <form>
+                      <h4 className="text-black border-top border-black mt-4 pt-3">
+                        Quiz Questions
+                      </h4>
+                      {/* Question Input */}
+                      <div className="input-group">
+                        <span className="input-group-text">Question:</span>
+                        <input
+                          className="form-control"
+                          type="text"
+                          value={quizQuestion.question}
+                          onChange={(e) =>
+                            handleQuizQuestionChange("question", e.target.value)
+                          }
+                          required
+                        />
+                      </div>
+                      {/* Choices Input */}
+                      {quizQuestion.choices.map((choice, index) => (
+                        <div
+                          className="input-group mt-2"
+                          key={`choice-${index}`}
+                        >
+                          <span className="input-group-text">{`Choice ${
+                            index + 1
+                          }:`}</span>
+                          <input
+                            className="form-control"
+                            type="text"
+                            value={choice}
+                            onChange={(e) =>
+                              handleQuizQuestionChange(
+                                "choices",
+                                e.target.value,
+                                index
+                              )
+                            }
+                            required
+                          />
+                        </div>
+                      ))}
+                      {/* Correct Answer Input */}
+                      <div className="input-group mt-2">
+                        <span className="input-group-text">
+                          Correct Answer:
+                        </span>
+                        <input
+                          className="form-control"
+                          type="text"
+                          value={quizQuestion.correctAnswer}
+                          onChange={(e) =>
+                            handleQuizQuestionChange(
+                              "correctAnswer",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </div>
+                    </form>
+                    <button
+                      className="btn courseBtn mt-2"
+                      onClick={handleAddQuizQuestion}
+                    >
+                      Add Quiz Question
+                    </button>
                   </div>
-                ))
-              ) : (
-                <p>There are no stored questions</p>
+                  {/* Display added quiz questions */}
+                  <div className="contentBorder mt-2">
+                    {quizQuestions.length > 0 ? (
+                      quizQuestions.map((question, index) => (
+                        <div key={index}>
+                          <h3>Question {index + 1}:</h3>
+                          <p>{question.question}</p>
+                          {/* Map through the choices array */}
+                          {question.choices.map((choice, choiceIndex) => (
+                            <p key={`choice-${choiceIndex}`}>{`Choice ${
+                              choiceIndex + 1
+                            }: ${choice}`}</p>
+                          ))}
+                          <p>Correct Answer: {question.correctAnswer}</p>
+                          <button
+                            className="btn courseBtn"
+                            onClick={() => handleEditQuizQuestion(index)}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <i>Add quiz question.</i>
+                    )}
+                  </div>
+                  {/* Button to submit quiz questions */}
+                  {quizQuestions.length > 0 && (
+                    <button
+                      className="btn courseBtn mt-3"
+                      onClick={handleSubmitQuiz}
+                    >
+                      Submit Quiz Questions
+                    </button>
+                  )}
+                  {/* Display added quiz questions */}
+                  <div>
+                    {quizQuestionsDisplay.length > 0 ? (
+                      quizQuestionsDisplay.map((question, index) => (
+                        <div key={index}>
+                          <h3>Question {index + 1}:</h3>
+                          <p>{question.question}</p>
+                          {/* Map through the choices array */}
+                          {question.choices.map((choice, choiceIndex) => (
+                            <p key={`choice-${choiceIndex}`}>{`Choice ${
+                              choiceIndex + 1
+                            }: ${choice}`}</p>
+                          ))}
+                          <p>Correct Answer: {question.correctAnswer}</p>
+                          <button
+                            onClick={() =>
+                              handleEditQuizQuestionDisplay(question)
+                            }
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="m-3">
+                        <i>Quiz is empty.</i>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
+              {/* End */}
+              {/* This is to Update or Add content*/}
+              <Modal
+                show={showUpdateModal}
+                onHide={() => setShowUpdateModal(false)}
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Update Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Are you sure you want to update the content?
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="success" onClick={() => handleSubmit()}>
+                    Yes
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowUpdateModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {/* Delete  Files  */}
+              <Modal show={deleteFile} onHide={() => setDeleteFile(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Are you sure you want to delete this file? This include the
+                  contents and quizzes.
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger" onClick={handleYesClick}>
+                    Yes
+                  </Button>
+                  <Button variant="secondary" onClick={handleNoClick}>
+                    Cancel
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {/* Logout Confirmation Modal */}
+              <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Logout Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to logout?</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="success" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {/* Add Quiz Error Modal */}
+              <Modal
+                show={addQuizErrorModal}
+                onHide={() => setAddQuizErrorModal(false)}
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Quiz Error!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Please fill in all fields for the quiz question.
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="success"
+                    onClick={() => setAddQuizErrorModal(false)}
+                  >
+                    Ok
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </div>
           </div>
-        )}
-        {/* This is to Update or Add content */}
-        <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Update Confirmation</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to update the content?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="success" onClick={() => handleSubmit()}>
-              Yes
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setShowUpdateModal(false)}
-            >
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        {/* Delete  Files  */}
-        <Modal show={deleteFile} onHide={() => setDeleteFile(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Delete</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            Are you sure you want to delete this file? This include the contents
-            and quizzes.
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger" onClick={handleYesClick}>
-              Yes
-            </Button>
-            <Button variant="secondary" onClick={handleNoClick}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        </div>
       </div>
     </>
   );

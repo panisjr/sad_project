@@ -3,6 +3,15 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleUser,
+  faChevronLeft,
+  faMagnifyingGlass,
+  faArrowRightFromBracket,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import logo from "./icons/program.png";
 import "./Admin.css";
 
 function TeacherAdmin() {
@@ -12,6 +21,8 @@ function TeacherAdmin() {
   const [showModal, setShowModal] = useState(false);
   const [deleteFile, setDeleteFile] = useState(false);
   const [deletedItemId, setDeletedItemId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const handleLogout = () => {
     navigate("/");
     setShowModal(false);
@@ -25,6 +36,9 @@ function TeacherAdmin() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
   // Delete File
@@ -62,6 +76,43 @@ function TeacherAdmin() {
     setDeleteFile(true);
     setDeletedItemId(itemId);
   };
+  // Search Bar
+  const [searchCriteria, setSearchCriteria] = useState("filename");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios
+        .post("http://localhost:8081/teacherSearchAccount", {
+          searchCriteria,
+          searchTerm,
+        })
+        .then((res) => {
+          setSearchResults(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    let timer;
+
+    if (!searchTerm) {
+      // If search term is empty, wait for 3 seconds before displaying all files
+      timer = setTimeout(() => {
+        handleSearch();
+      }, 2000);
+    } else {
+      // Otherwise, perform the search immediately
+      handleSearch();
+    }
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   return (
     <>
       {/* Admin Profile Info */}
@@ -69,23 +120,17 @@ function TeacherAdmin() {
       <div className="container-fluid adminDashWrapper">
         <div className="row admin_container">
           <div className="col-2 text-center adminInfo">
-            <h3 className="pt-5">Admin</h3>
-
+            <div className="logoContainer">
+              <img src={logo} alt="Website Logo" className="adminLogo" />
+              <h5 className="adminLogoName">CodePulse</h5>
+            </div>
+            <h3 className="pt-5">Instructors</h3>
             {/* Logout button */}
             <div className=" d-grid align-items-center justify-content-center">
-              <Link className="btn btn-warning m-2 mt-5" to="/admin">
-                Dashboard
-              </Link>
-              <Link className="btn btn-warning m-2" to="/register">
-                Register New Account
+              <Link className="btn btn-light m-2 mt-5" to="/admin">
+                <FontAwesomeIcon icon={faChevronLeft} /> Dashboard
               </Link>
             </div>
-            <Link
-              className="btn btn-primary logoutBtnAdmin "
-              onClick={() => setShowModal(true)}
-            >
-              Logout
-            </Link>
             {/* Logout Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
@@ -93,7 +138,7 @@ function TeacherAdmin() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleLogout}>
+                <Button variant="success" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -122,42 +167,78 @@ function TeacherAdmin() {
           </div>
 
           {/* Admin Dashboard */}
-          <div className="col-10 text-center adminContentContainer">
-            <div className="col-10 admin_container">
-              <h1
-                style={{
-                  marginLeft: "200px",
-                  marginTop: "20px",
-                }}
-              >
-                Teacher
-              </h1>
-              <div>
-                <table
-                  className="table table-bordered studentDataTable"
-                  style={{
-                    width: "700px",
-                    marginLeft: "430px",
-                  }}
-                >
+          <div className="col-10 text-center adminContent">
+            <div className="row adminContentRow">
+              <nav className="adminNavbar">
+                <div>
+                  <label htmlFor="">
+                    <FontAwesomeIcon
+                      icon={faCircleUser}
+                      size="xl"
+                      style={{ marginRight: "10px" }}
+                    />
+                    Admin
+                  </label>
+                </div>
+                {/* Logout button */}
+                <div>
+                  <Link
+                    className="btn btn-outline-light"
+                    onClick={() => setShowModal(true)}
+                  >
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                  </Link>
+                </div>
+              </nav>
+              {/* Search Bar */}
+              <form className="form-group searchBar">
+                <div className="input-group ">
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search file"
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      onClick={handleSearch}
+                    />
+                  </span>
+                </div>
+              </form>
+              <div className="studentAccountTable">
+                <table className="table table-bordered">
                   <thead>
                     <tr>
-                      <th className="bg-warning">ID Number</th>
-                      <th className="bg-warning">Name</th>
-                      <th className="bg-warning">Email</th>
-                      <th className="bg-warning"></th>
+                      <th className="bg-secondary">ID Number</th>
+                      <th className="bg-secondary">Name</th>
+                      <th className="bg-secondary">Email</th>
+                      <th className="bg-secondary"></th>
                     </tr>
                   </thead>
-                  {data.length === 0 ? (
+                  {loading ? (
                     <tbody>
                       <tr>
-                        <td>Empty</td>
-                        <td>Empty</td>
-                        <td>Empty</td>
+                        <td colSpan="4">
+                          <i className="text-black">Loading</i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  ) : data.length === 0 ? (
+                    <tbody>
+                      <tr>
+                        <td colSpan="4">
+                          <i>No registered account</i>
+                        </td>
                       </tr>
                     </tbody>
                   ) : (
-                    data.map((item) => (
+                    searchResults.map((item) => (
                       <tbody>
                         <tr key={item.id} className="text-left">
                           <td className="bg-light text-black">
@@ -168,14 +249,12 @@ function TeacherAdmin() {
                           </td>
                           <td className="bg-light text-black">{item.email}</td>
                           <td>
-                            <button
-                              className="btn btn-danger ms-2"
-                              onClick={() => handleDeleteClick(item.id)}
-                            >
-                              <span className="material-symbols-outlined">
-                                delete
-                              </span>
-                            </button>
+                            <Link onClick={() => handleDeleteClick(item.id)}>
+                              <FontAwesomeIcon
+                                className="faTrash"
+                                icon={faTrash}
+                              />
+                            </Link>
                           </td>
                         </tr>
                       </tbody>

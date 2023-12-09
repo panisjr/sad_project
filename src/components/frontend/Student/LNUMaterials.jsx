@@ -12,6 +12,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDownload,
   faMagnifyingGlass,
+  faCircleUser,
+  faIdBadge,
+  faChevronRight,
+  faArrowLeft,
+  faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 function LNUMaterials() {
   const downloadFileAtUrl = (url) => {
@@ -22,10 +27,6 @@ function LNUMaterials() {
     document.body.appendChild(aTag);
     aTag.click();
     aTag.remove();
-  };
-  // Define the data
-  const handleLNUMaterials = () => {
-    navigate("/studentDash"); // Define the route for StudentJavaDash
   };
   const handleLogout = () => {
     navigate("/");
@@ -43,7 +44,6 @@ function LNUMaterials() {
   const [image, setImage] = useState("");
   const [src, setSrc] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [username, setUsername] = useState("");
   const [data, setData] = useState([]);
   const [filename, setFilename] = useState([]);
 
@@ -60,15 +60,32 @@ function LNUMaterials() {
     setImageCrop(false);
     localStorage.setItem("pview", JSON.stringify(pview));
   };
+  // User Info
+  const [username, setUsername] = useState("");
+  const [idNumber, setIDNumber] = useState("");
   useEffect(() => {
-    let username = sessionStorage.getItem("username");
-    if (username === "" || username === null) {
-      navigate("/");
-    } else {
-      // Set the username in the component state
-      setUsername(username);
-    }
-  });
+    let cancelRequest = axios.CancelToken.source();
+
+    axios
+      .get("http://localhost:8081/userInfo", {
+        cancelToken: cancelRequest.token,
+      })
+      .then((res) => {
+        if (res.data.valid) {
+          setUsername(res.data.username);
+          setIDNumber(res.data.id_number);
+        } else {
+          // You may want to navigate to the login page only if the response is a 401 (Unauthorized) status
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return () => {
+      cancelRequest.cancel("Component is unmounted");
+    };
+  }, []);
   useEffect(() => {
     // Fetch data from the server using Axios
     axios
@@ -122,17 +139,17 @@ function LNUMaterials() {
       <div className="container-fluid studentWrapper">
         <div className="row studentContainer">
           <div className="col-2 text-center studentInfo">
-            <h3 className="text-center pt-3">Student Profile</h3>
-            <button className="btn">
+            <div>
               <img
                 style={{
-                  width: "150px",
-                  height: "150px",
-                  marginTop: "80px",
-                  marginLeft: "10px",
+                  width: "130px",
+                  height: "130px",
+                  marginTop: "30px",
+                  marginLeft: "28px",
                   borderRadius: "50%",
                   objectFit: "cover",
-                  border: "4px solid #0a0064",
+                  cursor: "pointer",
+                  border: "2px solid white",
                 }}
                 onClick={() => setImageCrop(true)}
                 src={pview || img}
@@ -189,22 +206,18 @@ function LNUMaterials() {
                   }}
                 />
               </div>
-            </button>
-            <div className="userName text-center">
+            </div>
+            <div className="studentName text-center">
               <p>{username}</p>
             </div>
-            <button
-              className="btn btn-primary back"
-              onClick={handleLNUMaterials}
-            >
-              Back
-            </button>
-            <Link
-              className="btn btn-primary logoutBtn"
-              onClick={() => setShowModal(true)}
-            >
-              Logout
-            </Link>
+            <label htmlFor="">
+              <FontAwesomeIcon
+                icon={faIdBadge}
+                size="xl"
+                style={{ marginRight: "10px" }}
+              />
+              {idNumber}
+            </label>
             {/* Logout Message */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
@@ -221,86 +234,91 @@ function LNUMaterials() {
               </Modal.Footer>
             </Modal>
           </div>
-          <div className="col-10">
-            <div className="d-flex align-items-center">
-              <h1 className="pt-4">LNU Materials</h1>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                width: "500px",
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faMagnifyingGlass}
-                style={{
-                  color: "#000000",
-                  marginTop: "13px",
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={handleSearch}
-              />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                id="search-bar"
-                placeholder="What can I help you with today?"
-                style={{ paddingLeft: "10px", flex: "1" }}
-              />
-            </div>
-            <div className="tableCustom">
+          <div className="col-10 studentContent">
+            <div className="row studentContentRow">
+              <nav className="adminNavbar">
+                <div>
+                  <Link className="m-3" to="/studentDash">
+                    <FontAwesomeIcon icon={faArrowLeft} size="xl" />
+                  </Link>
+                </div>
+                {/* Logout button */}
+                <div>
+                  <Link
+                    className="btn btn-outline-light"
+                    onClick={() => setShowModal(true)}
+                  >
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                  </Link>
+                </div>
+              </nav>
+              {/* Search Bar */}
+              <form className="form-group searchBar">
+                <div className="input-group ">
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search file"
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      onClick={handleSearch}
+                    />
+                  </span>
+                </div>
+              </form>
               <h2 className="text-center text-black">Uploaded Files</h2>
-              <table
-                className="table table-bordered table-striped"
-                style={{
-                  width: "1000px",
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th className="bg-warning text-center">Title</th>
-                    <th className="bg-warning text-center">File Name</th>
-                    <th className="bg-warning text-center">Uploaded By:</th>
-                    <th className="bg-warning text-center">Date</th>
-                    <th className="bg-warning"></th>
-                  </tr>
-                </thead>
-                {data.length === 0 ? (
-                  <tbody>
+              <div className="lnuMaterialsList">
+                <table className="table table-bordered">
+                  <thead>
                     <tr>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
-                      <td className="text-center">No Uploaded File</td>
+                      <th className="bg-secondary text-center">Title</th>
+                      <th className="bg-secondary text-center">File Name</th>
+                      <th className="bg-secondary text-center">Uploaded By:</th>
+                      <th className="bg-secondary text-center">Date</th>
+                      <th className="bg-secondary"></th>
                     </tr>
-                  </tbody>
-                ) : (
-                  searchResults.map((item) => (
+                  </thead>
+                  {data.length === 0 ? (
                     <tbody>
-                      <tr className="text-center fileList">
-                        <td>{item.title}</td>
-                        <td key={item.filename}>{item.filename}</td>
-                        <td>{item.instructors_name}</td>
-                        <td>{item.date}</td>
-                        <td>
-                          <button
-                            className="btn btn-success"
-                            onClick={() =>
-                              downloadFileAtUrl(
-                                `http://localhost:8081/uploads/${item.filename}`
-                              )
-                            }
-                          >
-                            <FontAwesomeIcon icon={faDownload} />
-                          </button>
+                      <tr>
+                        <td className="text-center" colSpan="5">
+                          No Uploaded File
                         </td>
                       </tr>
                     </tbody>
-                  ))
-                )}
-              </table>
+                  ) : (
+                    searchResults.map((item) => (
+                      <tbody>
+                        <tr className="text-center fileList">
+                          <td>{item.title}</td>
+                          <td key={item.filename}>{item.filename}</td>
+                          <td>{item.instructors_name}</td>
+                          <td>{item.date}</td>
+                          <td>
+                            <Link
+                              className="faDownload"
+                              onClick={() =>
+                                downloadFileAtUrl(
+                                  `http://localhost:8081/uploads/${item.filename}`
+                                )
+                              }
+                            >
+                              <FontAwesomeIcon icon={faDownload} size="xl" />
+                            </Link>
+                          </td>
+                        </tr>
+                      </tbody>
+                    ))
+                  )}
+                </table>
+              </div>
             </div>
           </div>
         </div>

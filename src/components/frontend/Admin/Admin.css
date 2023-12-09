@@ -1,16 +1,16 @@
 .adminDashWrapper{
   margin: 0;
-  padding: 0;
+  padding: 10px;
   width: 1365px;
   height: 640px;
+  background-color: rgb(203, 203, 203);
 }
-.adminContentContainer{
-    font-family: Arial, Helvetica, sans-serif;
-    width: 100%;
+.adminContent{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 12px;
+    height: 100%;
+    overflow-y: auto;
   }
   .adminCourseContainer{
     font-family: Arial, Helvetica, sans-serif;
@@ -19,12 +19,10 @@
     display: flex;
     flex-direction: row ;
   }
-  .customColumn{
-    margin-top:-100px;
-  }
   .admin_container{
     width: 100%;
     height: 100%;
+    margin-left: 1px;
   }
   .welcomeAdmin{
     margin-left: 250px;
@@ -34,9 +32,15 @@ height: fit-content;
     padding: 10px;
     color: #06003d;
   }
-  .custom_data{
-    height: 250px;
-    width: 430px;
+  .customColumn{
+    background-color: #0c243c;
+    color: black;
+    height: 150px;
+    width: 330px;
+  }
+  .customData{
+    height: 150px;
+    width: 330px;
   }
   .courseButton{
   font-size: 20px;
@@ -82,17 +86,10 @@ height: fit-content;
   margin-top: 10px;
 }
   .adminInfo{
-    border-right: 2px solid #06003d;
     color: WHITE;
-    height: 100%;
-    background: linear-gradient(to bottom, #143f71, #050128);
-    position: fixed;
+    border-radius: 10px;
+    background: #0c243c;
     overflow: hidden;
-  }
-  .logoutBtnAdmin{
-    position: absolute;
-    bottom: 50px;
-    left: 75px;
   }
   @media screen  and (max-width:600px){
     .admin_container{
@@ -100,25 +97,142 @@ height: fit-content;
       margin: 0;
     }
   }
-  .editor{
-    width: 900px;
+  
+  .userRole{
     color: black;
+    position: absolute;
+    top: 70px;
   }
-  .editor a{
-    color: blue;
+  .adminContentRow{
+    box-shadow: none;
+    margin: 0;
+    height: 100%;
+    width : 100%;
   }
-  .editor a:hover{
-    text-decoration: underline;
-    color: #143f71;
+  .adminNavbar{
+    background-color: #0c243c;
+    margin-top: 5px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    border-radius: 5px;
   }
-  .parsed-content table {
-    border-collapse: collapse;
-    width: 100%;
+  .dataListDisplay{
+    width: 1500px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow-x:auto ;
+    margin: 0;
+    padding: 10px;
+    box-shadow: none;
   }
-  
-  .parsed-content th, .parsed-content td {
-    border: 1px solid #000000;
-    text-align: center;
-    padding: 8px;
+  .adminLogo{
+    width: 70px;
   }
-  
+  .adminLogoName{
+margin-top: 50px;
+margin-left: 80px;
+  }
+  /* Student Page */
+
+.studentAccountTable{
+  height: 500px;
+  width: 1070px;
+  overflow-y: auto;
+}
+.tableColumn th{
+  background-color: #0c243c;
+}
+.adminSearchBar{
+  display: flex;
+  width: 500px;
+}
+/* End */
+/* Courses Page */
+.courseForm{
+  border: 2px solid #0c243c;
+  width: 600px;
+  padding: 10px;
+  margin-left: 250px;
+  margin-top: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}.courseTitleRow{
+  box-shadow: none;
+    margin: 0;
+    height: 350px;
+    width : 100%;
+    overflow-y: auto;
+  margin-top: 10px;
+  border-radius: 10px;
+
+}
+.courseTitleColumn{
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #7ea3c8;
+}
+.courseTitle{
+  cursor: pointer;
+  padding: 10px;
+}
+.courseTitle:hover{
+  background-color: #143f71;
+  color: white;
+  transition: .2s;
+}
+.customBorder{
+  border: 1px solid white;
+  border-radius: 10px;
+  width:500px;
+  color: black;
+  background-color: #7ea3c8;
+}
+.faTrash{
+  padding: 10px;
+  color: #0c243c;
+}
+.faTrash:hover{
+  color: rgb(208, 71, 71);
+  transition: .2s;
+}
+.editor{
+  width: 1060px;
+  color: black;
+}
+
+.editor a{
+  color: blue;
+}
+.editor a:hover{
+  text-decoration: underline;
+  color: #143f71;
+}
+.parsed-content table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.parsed-content th, .parsed-content td {
+  border: 1px solid #000000;
+  text-align: center;
+  padding: 8px;
+}
+.contentBorder{
+  border: 1px solid #0c243c;
+  padding: 10px;
+  border-radius: 10px;
+}
+.courseBtn{
+  background-color: #0c243c;
+  color: white;
+}
+.courseBtn:hover{
+  background-color: #143f71;
+color: white;
+}
+/* End */

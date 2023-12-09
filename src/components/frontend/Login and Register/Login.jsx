@@ -5,7 +5,7 @@ import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faIdBadge, faLock, faXmark } from "@fortawesome/free-solid-svg-icons";
 function Login() {
   useEffect(() => {
     document.title = "CodePulse | Login";
@@ -130,19 +130,28 @@ function Login() {
                 </Button>
               </Modal.Footer>
             </Modal>
-            <div className="col-md-7 side-image">
+            <div className="col-md-6 side-image">
               {/* Image icon */}
               {/* <img src="assets/car-icon.png" alt=""/> */}
               <div className="text">
                 <h3 className="text-black">Welcome Back!</h3>
               </div>
+              <div className="qoute">
+                <h3 className="text-black">
+                  <i>Unlock the possibilities that await behind every login.</i>
+                </h3>
+              </div>
             </div>
-            <div className="col-md-5 right">
+            <div className="col-md-6 right">
               <div className="input-box">
                 <form>
                   <div className="exitBtn">
                     <Link to="/">
-                      <FontAwesomeIcon icon={faXmark} size="lg" />
+                      <FontAwesomeIcon
+                        className="exitBtn"
+                        icon={faXmark}
+                        size="lg"
+                      />
                     </Link>
                   </div>
                   <h1 className="pb-5 text-center">Login</h1>
@@ -160,7 +169,8 @@ function Login() {
                     />
                     <label htmlFor="id_number">
                       <FontAwesomeIcon
-                        icon={faUser}
+                        icon={faIdBadge}
+                        size="lg"
                         style={{ marginRight: "10px" }}
                       />
                       ID Number
@@ -182,6 +192,7 @@ function Login() {
                     <label htmlFor="password">
                       <FontAwesomeIcon
                         icon={faLock}
+                        size="lg"
                         style={{ marginRight: "10px" }}
                       />
                       Password

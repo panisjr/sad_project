@@ -1,8 +1,9 @@
 //C:\react-js\my-app\src\App.js
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 function App() {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState();
@@ -79,10 +80,22 @@ function App() {
   // };
 
   return (
-    <div className="container-fluid m-5">
-      <div className="row" style={{ width: "500px" }}>
+    <div className="container-fluid teacherWrapper">
+      <div
+        className="row"
+        style={{ width: "500px", marginLeft: "430px", marginTop: "30px" }}
+      >
         <div className="col-12 d-block align-items-center justify-content-center p-5">
           <form onSubmit={upload}>
+            <div className="exitBtn">
+              <Link to="/teacherDash">
+                <FontAwesomeIcon
+                  className="teacherFaXmark"
+                  icon={faXmark}
+                  size="lg"
+                />
+              </Link>
+            </div>
             <div>
               <label htmlFor="title" className="form-label">
                 Title
@@ -112,13 +125,13 @@ function App() {
 
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn teacherUploadBtn"
               style={{ marginTop: "20px" }}
             >
               Upload
             </button>
             <button
-              className="btn btn-danger ms-2"
+              className="btn teacherCancelBtn ms-2"
               style={{ marginTop: "20px" }}
               onClick={cancel}
             >

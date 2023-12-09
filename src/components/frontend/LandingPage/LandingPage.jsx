@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "./images/program.png";
 import hero from "./images/hero-7.webp";
+import down from "./images/down.png";
+import down1 from "./images/down (1).png";
+import down2 from "./images/down (2).png";
+import circle from "./images/circle.png";
+import circle1 from "./images/circle (1).png";
+import onlinetest from "./images/onlinetest.png";
 import "./LandingPage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
@@ -120,6 +126,7 @@ function LandingPage() {
                   About
                 </Link>
               </li>
+              <li className="landingNavLi landingNavButton">|</li>
               <li className="landingNavLi">
                 <Link className="landingNavButton" to="/login">
                   Login
@@ -133,18 +140,80 @@ function LandingPage() {
             id="home"
             className={`homeContainer${isVisible ? " animate" : ""}`}
           >
-            <img
-              src={hero}
-              id="hero"
-              alt="Description of the image"
-              className={`hero${isHeroVisible ? " animate" : ""}`}
-            />
+            <div>
+              <img
+                src={hero}
+                id="hero"
+                alt="Description of the image"
+                className={`hero${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={down}
+                id="down"
+                alt="Inverted triangle"
+                className={`down${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={down1}
+                id="down1"
+                alt="Inverted triangle"
+                className={`down1${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={down1}
+                id="down1small"
+                alt="Inverted triangle"
+                className={`down1small${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={down2}
+                id="down2"
+                alt="Inverted triangle"
+                className={`down2${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={down2}
+                id="down2small"
+                alt="Inverted triangle"
+                className={`down2small${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={circle}
+                id="circle"
+                alt="Inverted triangle"
+                className={`circle${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={circle}
+                id="circlesmall"
+                alt="Inverted triangle"
+                className={`circlesmall${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={circle1}
+                id="circle1"
+                alt="Inverted triangle"
+                className={`circle1${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={circle1}
+                id="circle1small"
+                alt="Inverted triangle"
+                className={`circle1small${isHeroVisible ? " animate" : ""}`}
+              />
+              <img
+                src={onlinetest}
+                id="onlinetest"
+                alt="A guy sitting inside a monitor"
+                className={`onlinetest${isHeroVisible ? " animate" : ""}`}
+              />
+            </div>
             <h1 className="text-white">Empowering Coders,</h1>
-            <h1 style={{ marginLeft: "150px", color: "white" }}>
+            <h1 style={{ marginLeft: "150px", color: "white", zIndex: "1" }}>
               Unleashing Innovation
             </h1>
             <h5 className="text-white">
-              Your Gateway to Mastery in the Digital Realm.
+              Your Gateway to Mastery to becoming a Skilled Programmer.
             </h5>
           </div>
           <div className="secondContent">
@@ -154,51 +223,50 @@ function LandingPage() {
             <h1 className="text-white">
               every keystroke brings you closer to digital mastery
             </h1>
-            <p className="text-white">
+            <h5
+              className="text-white text-center w-50"
+              style={{
+                marginTop: "100px",
+                marginBottom: "150px",
+                marginRight: "80px",
+              }}
+            >
               Education is the key that unlocks the doors to a world of endless
               possibilities. Each page you turn, each equation you solve, and
               each concept you grasp brings you one step closer to your dreams.
               Embrace the journey of learning, for it is the foundation upon
-              which your future success will be built. As you study, remember
+              which your future success will be built.
+              {/* As you study, remember
               that every ounce of effort you invest in your education is an
               investment in yourself. The knowledge you gain today will be the
               fuel that propels you toward the extraordinary achievements of
               tomorrow. So, study with passion, persevere through challenges,
               and let the pursuit of knowledge be the melody that orchestrates
-              the symphony of your success.
-            </p>
+              the symphony of your success. */}
+            </h5>
           </div>
-          <h2>Title for motivation</h2>
-          <p>
-            Education is the key that unlocks the doors to a world of endless
-            possibilities. Each page you turn, each equation you solve, and each
-            concept you grasp brings you one step closer to your dreams. Embrace
-            the journey of learning, for it is the foundation upon which your
-            future success will be built. As you study, remember that every
-            ounce of effort you invest in your education is an investment in
-            yourself. The knowledge you gain today will be the fuel that propels
-            you toward the extraordinary achievements of tomorrow. So, study
-            with passion, persevere through challenges, and let the pursuit of
-            knowledge be the melody that orchestrates the symphony of your
-            success.
-          </p>
           <div className="aboutContainer" id="about">
-            <h2>About</h2>
+            <h2>About us</h2>
             <p>
-              Join Us on the Learning Journey Whether you're taking your first
-              step into the world of knowledge or seeking advanced expertise,
-              CodePulse is here to guide you. Embark on a journey of continuous
-              learning, discovery, and personal growth.
+              At Code Pulse, we understand that the first steps in programming
+              can be both thrilling and challenging. That's why we've curated a
+              comprehensive and beginner-friendly environment to nurture your
+              skills and foster a love for coding.
             </p>
-          </div>
-          <div className="aboutContainer" id="contact">
+            <h5 className="text-white">What You'll Learn</h5>
+            <p>
+              Programming Basics: Lay a solid foundation with languages like
+              Python or Java.
+            </p>
             <h2>Contact</h2>
-            <FontAwesomeIcon
-              icon={faEnvelope}
-              size="xl"
-              style={{ color: "#ffffff" }}
-            />
-            <a href="">educational@gmail.com</a>
+            <label htmlFor="">
+              <FontAwesomeIcon
+                icon={faEnvelope}
+                size="xl"
+                style={{ color: "#ffffff", marginRight: "5px" }}
+              />
+              <a href="https://mail.google.com/">lnucodepulse@gmail.com</a>
+            </label>
           </div>
         </div>
       </div>

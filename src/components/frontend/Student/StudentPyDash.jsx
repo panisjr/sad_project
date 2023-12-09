@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Student.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDownload,
+  faMagnifyingGlass,
+  faCircleUser,
+  faIdBadge,
+  faChevronRight,
+  faArrowLeft,
+  faArrowRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import Intro_Q from "../Student/java/quiz/Intro/Intro_Q";
+import python2 from "./icons/python2.png";
 
 function StudentPyDash() {
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -71,13 +82,15 @@ function StudentPyDash() {
     <>
       <div className="container-fluid studentWrapper">
         <div className="row studentContainer">
-          <div className="col-2 courseList">
-            <h1 className="text-black text-center pt-3">Courses</h1>
-            <Link to="/studentDash" className="btn btn-primary mt-1 ">
-              Back
-            </Link>
-
-            <ul>
+          <div className="col-3 studentInfo">
+            <div className=" d-flex align-items-left">
+              <Link className="m-3" to="/studentDash">
+                <FontAwesomeIcon icon={faArrowLeft} size="xl" />
+              </Link>
+            </div>
+            <h2 className="pythonName">Python</h2>
+            <img src={python2} alt="Python Logo" className="coursePythonLogo" />
+            <ul className="courseList">
               {pythonCourses.map((course) => (
                 <li key={course.id} onClick={() => handleCourseClick(course)}>
                   {course.title}
@@ -85,35 +98,38 @@ function StudentPyDash() {
               ))}
             </ul>
           </div>
-          <div className="col-10 courseContent">
-            <h1 className="text-black text-center">Courses View</h1>
-            {selectedCourse && (
-              <div>
-                <h2 className="text-black">{selectedCourse.title}</h2>
-                <div>
-                  <h2 className="text-black">Content</h2>
-                  <div
-                    className="editor parsed-content"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        selectedCourse.content &&
-                        selectedCourse.content.trim() !== ""
-                          ? selectedCourse.content
-                          : "Your Content is Empty",
-                    }}
-                  />
+          <div className="col-9 courseContent">
+            <div className="row courseContentRow">
+              {selectedCourse && (
+                <div className="courseDisplay">
+                  <h2 className="text-black pt-3">{selectedCourse.title}</h2>
+                  <div>
+                    <div
+                      className="courseDisplay"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          selectedCourse.content &&
+                          selectedCourse.content.trim() !== ""
+                            ? selectedCourse.content
+                            : "Your Content is Empty",
+                      }}
+                    />
+                  </div>
+                  <button
+                    className="takeQuizBtn btn"
+                    onClick={() => setShowQuiz(true)}
+                  >
+                    Ready to take the Quiz?
+                  </button>
+                  {showQuiz && (
+                    <Intro_Q
+                      selectedCourse={selectedCourse}
+                      quizQuestionsDisplay={quizQuestionsDisplay}
+                    />
+                  )}
                 </div>
-                <button onClick={() => setShowQuiz(true)}>
-                  Ready to take the Quiz?
-                </button>
-                {showQuiz && (
-                  <Intro_Q
-                    selectedCourse={selectedCourse}
-                    quizQuestionsDisplay={quizQuestionsDisplay}
-                  />
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

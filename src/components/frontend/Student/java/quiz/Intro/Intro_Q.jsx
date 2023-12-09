@@ -70,7 +70,9 @@ const Intro_Q = ({ quizQuestionsDisplay }) => {
     <>
       <div className="quiz-container">
         {quizQuestionsDisplay.length === 0 ? (
-          <h6>The quiz is not available. Please try again later.</h6>
+          <h6 className="quizBorder">
+            The quiz is not available. Please try again later.
+          </h6>
         ) : !showResult ? (
           <>
             <p>Instruction: Read the questions carefully.</p>
@@ -94,7 +96,6 @@ const Intro_Q = ({ quizQuestionsDisplay }) => {
               ))}
             </ul>
             <div className="footer">
-              <button onClick={openQuit}>Quit</button>
               <button onClick={onClickNext} disabled={answerIdx === null}>
                 {currentQuestion === quizQuestionsDisplay.length - 1
                   ? "Finish"

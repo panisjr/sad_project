@@ -100,7 +100,138 @@ display: flex;
   opacity: 1;
   transform: translateY(0);
 }
+.down {
+  width: 70px;
+  top: 50px;
+  left: 50px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
 
+.down.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.down1 {
+  width: 70px;
+  bottom: 50px;
+  left: 600px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.down1.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.down1small {
+  width: 40px;
+  top: 500px;
+  left: 100px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.down1small.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.down2 {
+  width: 70px;
+  top: 500px;
+  left:400px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.down2.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.down2small {
+  width: 40px;
+  top: 100px;
+  left:1100px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.down2small.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.circle {
+  width: 70px;
+  top: 160px;
+  left:300px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.circle.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.circlesmall {
+  width: 40px;
+  top: 600px;
+  left:600px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.circlesmall.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.circle1 {
+  width: 70px;
+  top: 200px;
+  left:1200px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.circle1.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.circle1small {
+  width: 40px;
+  top: 450px;
+  left:250px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.circle1small.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+.onlinetest {
+  width: 400px;
+  border-radius: 20px;
+  top: 800px;
+  left:150px;
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.onlinetest.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+  
 .hero.outro {
   /* Define the outro animation */
   opacity: 0;

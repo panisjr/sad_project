@@ -25,6 +25,8 @@
     top:5%;
     right: 5%;
     transform: translate(-50%, -50%);
+}.exitBtn:hover{
+    color: rgb(222, 30, 30);
 }
 .side-image{
     background-image: url("./images/login.jpg");
@@ -83,6 +85,12 @@
     position: absolute;
     top: 15%;
     left: 40%;
+    transform: translate(-50%, -50%);
+}.qoute{
+    width: 300px;
+    position: absolute;
+    bottom: 2%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }
 .text p{

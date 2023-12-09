@@ -1,9 +1,9 @@
 .teacherWrapper{
   margin: 0;
-  padding: 0;
-  background-color: gray;
-  width: 1366px;
-  height: 641px;
+  padding: 10px;
+  width: 1365px;
+  height: 640px;
+  background-color: rgb(203, 203, 203);
 }
 .teacherContainer{
   height: 100%;
@@ -12,10 +12,10 @@
   border-radius: 0;
 }
 .teacherInfo{
-  background: linear-gradient(to bottom, #3e88dd, #0a0064);
-  color: white;
-  display: flex;
-flex-direction: column;
+  color: WHITE;
+  border-radius: 10px;
+  background: #0c243c;
+  overflow: hidden;
 }
 .uploadBtn{
   margin-top: 50px;
@@ -28,16 +28,31 @@ flex-direction: column;
   left: 70px;
 }
 .tableCustom{
-  width: 1010px;
-  height: 500px;
-  margin-left: 50px;
+  height: 400px;
+  width: 1070px;
   overflow-y: auto;
 }
 .fileList{
   font-size: 14px;
 }
+.teacherContent{
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow-y: auto;
+}
+.teacherContentRow{
+  box-shadow: none;
+  margin: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+  height: 100%;
+  width : 100%;
+}
 .userName{
-  margin-top: 170px;
+  margin-top: 190px;
 }
 .dialog{
   background-color: white;
@@ -95,3 +110,33 @@ input#search-bar{
   top: 0;
   right: 0;
 }
+.teacherUploadBtn{
+  background-color: #0c243c;
+  color: white;
+}
+.teacherUploadBtn:hover{
+  background-color: #3a83d6;
+color: white;
+transition: .2s;
+}
+.teacherCancelBtn{
+  background-color: #0c243c;
+  color: white;
+}
+.teacherCancelBtn:hover{
+  background-color: #de1e1e;
+color: white;
+transition: .2s;
+}
+
+.teacherFaXmark{
+  color: #0c243c;
+  position: absolute;
+  top:20px;
+  right: 375px;
+}
+.teacherFaXmark:hover{
+color: #de1e1e;
+transition: .2s;
+}
+

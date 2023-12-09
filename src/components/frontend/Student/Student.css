@@ -1,26 +1,42 @@
 .studentWrapper{
   margin: 0;
-  padding: 0;
-  background-color: gray;
-  width: 1366px;
-  height: 641px;
+  padding: 10px;
+  width: 1365px;
+  height: 640px;
+  background-color: rgb(203, 203, 203);
+
+}
+.studentContent{
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow-y: auto;
+}
+.studentContentRow{
+  box-shadow: none;
+    margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    height: 100%;
+    width : 100%;
 }
 .studentContainer{
   height: 100%;
   width: 100%;
-  margin: 0;
-  border-radius: 0;
+  margin-left: 1px;
 }
+
 .studentInfo{
-  background: linear-gradient(to bottom, #3e88dd, #0a0064);
-  color: white;
-  display: flex;
-flex-direction: column;
+  color: WHITE;
+    border-radius: 10px;
+    background: #0c243c;
+    overflow: hidden;
+
 }
-.lnuMaterials{
-  margin-top: 50px;
-  margin-left: 35px;
-  width: fit-content;
+.searchBar{
+  width: 500px;
 }
 .back{
   margin-top: 50px;
@@ -32,21 +48,53 @@ flex-direction: column;
   bottom: 40px;
   left: 70px;
 }
-.tableCustom{
-  width: 710px;
-  height: 500px;
-  margin-left: 200px;
+.lnuMaterialsList{
+  height: 450px;
+  width: 1070px;
   overflow-y: auto;
+}
+.faDownload{
+  color: #0c243c;
+}
+.faDownload:hover{
+  color: #1b9c12;
+  transition: .2s;
 }
 .courseButton{
   margin-top: 100px;
   margin-left: 90px;
   height: 250px;
-  border: 1px solid black ;
   width: 400px;
 }
-.userName{
-  margin-top: 170px;
+.courseButton:hover{
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("./icons/javaIcon.gif");
+}
+.studentFaXmark{
+  color: #0c243c;
+  position: absolute;
+  top:90px;
+  right: 210px;
+}
+.studentFaXmark:hover{
+color: #de1e1e;
+transition: .2s;
+}
+.studentName{
+  margin-top: 190px;
+}
+.quizBorder{
+  height: 410px;
+}
+.courses{
+  width: 1000px;
+  height: 490px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  margin-left: 100px;
 }
 .dialog{
   background-color: white;
@@ -70,32 +118,6 @@ flex-direction: column;
   margin-top:-50px ;
 }
 
-input#search-bar{
-  margin: 0 auto;
-  width: 100%;
-  height: 45px;
-  padding: 0 20px;
-  font-size: 1rem;
-  border: 1px solid #D0CFCE;
-  outline: none;
-  &:focus{
-    border: 1px solid #008ABF;
-    transition: 0.35s ease;
-    color: #008ABF;
-    &::-webkit-input-placeholder{
-      transition: opacity 0.45s ease; 
-  	  opacity: 0;
-     }
-    &::-moz-placeholder {
-      transition: opacity 0.45s ease; 
-  	  opacity: 0;
-     }
-    &:-ms-placeholder {
-     transition: opacity 0.45s ease; 
-  	 opacity: 0;
-     }    
-   }
- }
 .body{
   padding-top: 75px;
 }
@@ -106,21 +128,89 @@ input#search-bar{
   height: 65px;
   top: 0;
   right: 0;
+}.coursePythonLogo{
+width: 100px;
+margin-left: 150px;
+margin-top: 10px;
+}
+.javaName{
+  margin-left: 60px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.pythonName{
+  margin-left: 40px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 .courseContent{
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow-y: auto;
-  margin-left: 226px;
-  height: 641px;
-  width: 1140px;
-  padding: 20px;
+}
+.courseDisplay{
+  width: 100%;
+  padding: 10px;
+  color: black;
+}
+.courseContentRow{
+  box-shadow: none;
+  margin: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+  height: 620px;
+  width : 100%;
+  overflow-y: auto;
+}
+.courseDisplay a{
+  color: blue;
+}
+.courseDisplay a:hover{
+  text-decoration: underline;
+  color: #143f71;
+}
+.courseDisplay table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.courseDisplay th, .courseDisplay td {
+  border: 1px solid #000000;
+  text-align: center;
+  padding: 8px;
+}
+.takeQuizBtn{
+  width: 250px;
+  height: 50px;
+  background-color: #0c243c;
+  color: white;
+}
+.takeQuizBtn:hover{
+  background-color: #143f71;
+color: white;
 }
 .courseList{
-  background: linear-gradient(to bottom, #3e88dd, #0a0064);
-  height: inherit;
-  color: white;
-  display: flex;
-flex-direction: column;
-  position: fixed;
+  color: WHITE;
+    border-radius: 10px;
+    background: #0c243c;
+overflow-y: auto;    
+height: 475px;
+}
+.courseList li{
+  list-style: none;
+  border: 1px solid #2c66a0;
+  padding: 10px;
+  width: 290px;
+  margin-left: -25px;
+  font-size: 14px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+.courseList li:hover{
+  background-color: #2c66a0 ;
+  transition: .3s;
+  cursor: pointer;
 }
 .courseTitleList{
 list-style: none;  
@@ -130,4 +220,41 @@ color: rgb(194, 194, 255);
 }
 .courseTitleList:hover{
 color: white;
+}
+.studentLogo{
+  width: 70px;
+}
+.studentLogoName{
+  margin-top: 50px;
+  margin-left: 80px;
+}
+.javaIcon1{
+  height: 400px;
+  width: 400px;
+  background-image: url('icons/javaIcon.gif');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+border-radius: 20px;
+}
+.javaIcon1:hover{
+  background-image: url('icons/javaIcon1hover.gif');
+  background-repeat:space;
+  background-size: contain;
+  background-position: center;
+}
+.pythonIcon{
+  height: 400px;
+  width: 400px;
+  background-image: url('icons/pythonIcon.gif');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+border-radius: 20px;
+}
+.pythonIcon:hover{
+  background-image: url('icons/pythonIconhover.gif');
+  background-repeat:space;
+  background-size: contain;
+  background-position: center;
 }

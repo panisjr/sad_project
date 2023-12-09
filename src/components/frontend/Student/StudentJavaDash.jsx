@@ -4,6 +4,19 @@ import { Link } from "react-router-dom";
 import "./Student.css";
 import Intro_Q from "../Student/java/quiz/Intro/Intro_Q";
 import "./Student.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDownload,
+  faMagnifyingGlass,
+  faCircleUser,
+  faIdBadge,
+  faChevronRight,
+  faArrowLeft,
+  faXmark,
+  faArrowRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
+import javaIcon2 from "./icons/javaIcon2.jpg";
+
 function StudentJavaDash() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
@@ -18,9 +31,13 @@ function StudentJavaDash() {
     setSelectedCourse(false);
     setShowQuiz(true);
   };
-  const hideQuizQuestions = () => {
+  const handleHideShowQuiz = (course) => {
     setShowQuiz(false);
+    setSelectedCourse(true);
+  };
+  const handleShowQuiz = () => {
     setSelectedCourse(false);
+    setShowQuiz(true);
   };
   // THIS IS TO DISPLAY THE QUIZ QUESTIONS
   const [quizQuestionsDisplay, setQuizQuestionsDisplay] = useState([]);
@@ -78,13 +95,15 @@ function StudentJavaDash() {
     <>
       <div className="container-fluid studentWrapper">
         <div className="row studentContainer">
-          <div className="col-2 courseList">
-            <h1 className="text-black text-center pt-3">Courses</h1>
-            <Link to="/studentDash" className="btn btn-primary mt-1 ">
-              Back
-            </Link>
-
-            <ul>
+          <div className="col-3 studentInfo">
+            <div className=" d-flex align-items-left">
+              <Link className="m-3" to="/studentDash">
+                <FontAwesomeIcon icon={faArrowLeft} size="xl" />
+              </Link>
+            </div>
+            <h1 className="javaName">Java</h1>
+            <img src={javaIcon2} alt="Java Logo" className="coursePythonLogo" />
+            <ul className="courseList">
               {javaCourses.map((course) => (
                 <li
                   className="courseTitleList"
@@ -96,39 +115,40 @@ function StudentJavaDash() {
               ))}
             </ul>
           </div>
-          <div className="col-10 courseContent">
-            <h1 className="text-black text-center">Courses View</h1>
-            {selectedCourse ? (
-              <div>
-                <h2 className="text-black">{selectedCourse.title}</h2>
-                <div>
-                  <div
-                    className="editor parsed-content"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        selectedCourse.content &&
-                        selectedCourse.content.trim() !== ""
-                          ? selectedCourse.content
-                          : "Your Content is Empty",
-                    }}
-                  />
+          <div className="col-9 courseContent">
+            <div className="row courseContentRow">
+              {selectedCourse && (
+                <div className="courseDisplay">
+                  <h2 className="text-black ">{selectedCourse.title}</h2>
+                  <div>
+                    <div
+                      className="courseDisplay"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          selectedCourse.content &&
+                          selectedCourse.content.trim() !== ""
+                            ? selectedCourse.content
+                            : "Your Content is Empty",
+                      }}
+                    />
+                  </div>
+                  <button className="takeQuizBtn btn" onClick={handleShowQuiz}>
+                    Ready to take the Quiz?
+                  </button>
                 </div>
-                <button onClick={() => hideCourses()}>
-                  Ready to take the Quiz?
-                </button>
-              </div>
-            ) : (
-              <h5>Select a Course</h5>
-            )}
-            {showQuiz && (
-              <div>
-                <Intro_Q
-                  selectedCourse={selectedCourse}
-                  quizQuestionsDisplay={quizQuestionsDisplay}
-                />
-                <button onClick={hideQuizQuestions}>Exit</button>
-              </div>
-            )}
+              )}
+              {showQuiz && (
+                <div>
+                  <Intro_Q
+                    selectedCourse={selectedCourse}
+                    quizQuestionsDisplay={quizQuestionsDisplay}
+                  />
+                  <Link className="studentFaXmark" onClick={handleHideShowQuiz}>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
