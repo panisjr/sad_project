@@ -10,12 +10,19 @@ import {
   faIdBadge,
   faChevronRight,
   faArrowLeft,
+  faXmark,
   faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import Intro_Q from "../Student/java/quiz/Intro/Intro_Q";
 import python2 from "./icons/python2.png";
 
 function StudentPyDash() {
+  useEffect(() => {
+    document.title = "CodePulse | Python";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
 
@@ -25,6 +32,14 @@ function StudentPyDash() {
     setSelectedCourseId(course.id);
     // Reset the quiz display when another title is selected
     setShowQuiz(false);
+  };
+  const handleShowQuiz = () => {
+    setSelectedCourse(false);
+    setShowQuiz(true);
+  };
+  const handleHideShowQuiz = (course) => {
+    setShowQuiz(false);
+    setSelectedCourse(true);
   };
   // THIS IS TO DISPLAY THE QUIZ QUESTIONS
   const [quizQuestionsDisplay, setQuizQuestionsDisplay] = useState([]);
@@ -115,18 +130,26 @@ function StudentPyDash() {
                       }}
                     />
                   </div>
-                  <button
-                    className="takeQuizBtn btn"
-                    onClick={() => setShowQuiz(true)}
-                  >
+                  <button className="takeQuizBtn btn" onClick={handleShowQuiz}>
                     Ready to take the Quiz?
                   </button>
-                  {showQuiz && (
-                    <Intro_Q
-                      selectedCourse={selectedCourse}
-                      quizQuestionsDisplay={quizQuestionsDisplay}
-                    />
-                  )}
+                  <button
+                    className="takeQuizBtn btn ms-2"
+                    onClick={handleShowQuiz}
+                  >
+                    Practice Coding
+                  </button>
+                </div>
+              )}
+              {showQuiz && (
+                <div>
+                  <Intro_Q
+                    selectedCourse={selectedCourse}
+                    quizQuestionsDisplay={quizQuestionsDisplay}
+                  />
+                  <Link className="studentFaXmark" onClick={handleHideShowQuiz}>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </Link>
                 </div>
               )}
             </div>

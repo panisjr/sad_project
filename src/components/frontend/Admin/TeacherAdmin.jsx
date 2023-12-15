@@ -15,6 +15,12 @@ import logo from "./icons/program.png";
 import "./Admin.css";
 
 function TeacherAdmin() {
+  useEffect(() => {
+    document.title = "CodePulse | Instructor Accounts";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
   const [data, setData] = useState([]);
   const [showTeacherDeleteModal, setShowTeacherModal] = useState(false);
@@ -138,7 +144,7 @@ function TeacherAdmin() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="success" onClick={handleLogout}>
+                <Button variant="danger" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -198,7 +204,7 @@ function TeacherAdmin() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search file"
+                    placeholder="Search account"
                   />
                   <span
                     className="input-group-text"

@@ -80,6 +80,9 @@ function TeacherDashboard() {
         setData((prevData) =>
           prevData.filter((item) => item.id !== deletedItemId)
         );
+        setSearchResults((prevData) =>
+          prevData.filter((item) => item.id !== deletedItemId)
+        );
         // Update your state or UI here instead of reloading the page
         setDeleteFile(false);
         setDeletedItemId(null);
@@ -273,7 +276,7 @@ function TeacherDashboard() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="success" onClick={handleLogout}>
+                <Button variant="danger" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>

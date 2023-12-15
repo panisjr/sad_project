@@ -15,6 +15,12 @@ import logo from "./icons/program.png";
 import "./Admin.css";
 
 function StudentAdmin() {
+  useEffect(() => {
+    document.title = "CodePulse | Student Accounts";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const navigate = useNavigate(); // Use useNavigate to get the navigation function
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -196,7 +202,7 @@ function StudentAdmin() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search file"
+                    placeholder="Search Account"
                   />
                   <span
                     className="input-group-text"

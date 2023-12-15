@@ -19,6 +19,12 @@ import {
   faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 function LNUMaterials() {
+  useEffect(() => {
+    document.title = "CodePulse | LNU Materials";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const downloadFileAtUrl = (url) => {
     const filename = url.split("/").pop();
     const aTag = document.createElement("a");

@@ -106,7 +106,7 @@ function AdminDashboard() {
               </Modal.Header>
               <Modal.Body>Are you sure you want to logout?</Modal.Body>
               <Modal.Footer>
-                <Button variant="success" onClick={handleLogout}>
+                <Button variant="danger" onClick={handleLogout}>
                   Logout
                 </Button>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>

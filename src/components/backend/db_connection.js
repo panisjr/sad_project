@@ -7,9 +7,13 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import Bugsnag from '@bugsnag/js';
+import BugsnagPluginReact from '@bugsnag/plugin-react'
 
 Bugsnag.start({
-  apiKey: '0123456789abcdef0123456789abcdef'
+  apiKey: '0123456789abcdef0123456789abcdef',
+  plugins: [new BugsnagPluginReact()],
+  autoTrackSessions: true,
+  enabledReleaseStages: ['production'],
   // Add more configuration options if needed
 });
 // Create a MySQL connection
@@ -139,6 +143,8 @@ app.post('/login', (req, res) => {
           res.status(401).json({ message: 'Credentials do not match' });
         }
       });
+    } else {
+      Bugsnag.notify('Unsuccessfully logged in');
     }
   });
 });
@@ -596,6 +602,43 @@ app.get('/getQuizQuestions/:titleId', (req, res) => {
       res.json({ success: true, quizQuestions });
     } else {
       res.status(404).json({ success: false, error: "Course not found" });
+    }
+  });
+});
+// Add a new endpoint to handle updating a single quiz question
+app.post('/updateQuizQuestion', (req, res) => {
+  const { titleId, quizQuestionIndex, updatedQuizQuestion } = req.body;
+
+  // Fetch the existing quiz questions for the specified titleId
+  const sql = 'SELECT * FROM courses WHERE id = ?';
+  const values = [titleId];
+
+  DbConnection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    if (result.length > 0) {
+      // If a quiz question exists for the titleId, update the specific question
+      const existingQuizQuestions = result[0].quizQuestions || [];
+      existingQuizQuestions[quizQuestionIndex] = updatedQuizQuestion;
+
+      // Update the course with the modified quiz questions
+      const updateQuizQuestionsSql = 'UPDATE courses SET quizQuestions = ? WHERE id = ?';
+      const updateQuizQuestionsValues = [JSON.stringify(existingQuizQuestions), titleId];
+
+      DbConnection.query(updateQuizQuestionsSql, updateQuizQuestionsValues, (updateErr, updateResult) => {
+        if (updateErr) {
+          console.error("Update error:", updateErr);
+          return res.status(500).json({ success: false, error: "Update error" });
+        }
+
+        res.json(updateResult);
+      });
+    } else {
+      // Handle the case where the course does not exist
+      return res.status(404).json({ success: false, error: "Course not found" });
     }
   });
 });

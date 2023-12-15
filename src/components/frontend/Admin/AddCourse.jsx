@@ -17,6 +17,12 @@ import logo from "./icons/program.png";
 import "./Admin.css";
 import { Table } from "react-bootstrap";
 function AddCourse() {
+  useEffect(() => {
+    document.title = "CodePulse | Courses";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState([]);
   const [newCourse, setNewCourse] = useState("");
@@ -130,7 +136,14 @@ function AddCourse() {
         setCourses((prevData) =>
           prevData.filter((item) => item.id !== deletedItemId)
         );
+        setJavaCourses((prevData) =>
+          prevData.filter((item) => item.id !== deletedItemId)
+        );
+        setPythonCourses((prevData) =>
+          prevData.filter((item) => item.id !== deletedItemId)
+        );
         // Update your state or UI here instead of reloading the page
+        search;
         setDeleteFile(false);
         setDeletedItemId(null);
         window.location.reload();
@@ -203,25 +216,56 @@ function AddCourse() {
     }
   };
   const handleSubmitQuiz = () => {
-    // Submit the array of quiz questions to the server
-    axios
-      .post("http://localhost:8081/addQuizQuestions", {
-        titleId: selectedCourseId,
-        quizQuestions: quizQuestions,
-      })
-      .then((res) => {
-        if (res) {
-          console.log("Pop Quiz questions added successfully:", res.data);
-          setCourses(res.data);
-          setSelectedCourse(res.data);
-          setShowUpdateModal(false);
-          window.location.reload();
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding quiz questions:", error);
-        // Handle the error or log it
-      });
+    if (quizQuestions.length > 0) {
+      // If in editing mode, update the specific question
+      if (editedQuestionIndex !== null) {
+        const updatedQuizQuestion = quizQuestions; // Use the state variable holding the edited question
+        const titleId = selectedCourseId;
+        const quizQuestionIndex = editedQuestionIndex;
+
+        // Call the server endpoint to update the specific quiz question
+        axios
+          .post("http://localhost:8081/updateQuizQuestion", {
+            titleId,
+            quizQuestionIndex,
+            updatedQuizQuestion,
+          })
+          .then((res) => {
+            if (res) {
+              console.log("Quiz question updated successfully:", res.data);
+              // Handle any additional logic after the update if needed
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating quiz question:", error);
+            // Handle the error or log it
+          });
+
+        // Clear the editing state
+        setEditedQuestionIndex(null);
+        setEditQuizQuestion(null);
+      } else {
+        // If not in editing mode, submit all quiz questions as usual
+        axios
+          .post("http://localhost:8081/addQuizQuestions", {
+            titleId: selectedCourseId,
+            quizQuestions: quizQuestions,
+          })
+          .then((res) => {
+            if (res) {
+              console.log("Pop Quiz questions added successfully:", res.data);
+              setCourses(res.data);
+              setSelectedCourse(res.data);
+              setShowUpdateModal(false);
+              window.location.reload();
+            }
+          })
+          .catch((error) => {
+            console.error("Error adding quiz questions:", error);
+            // Handle the error or log it
+          });
+      }
+    }
   };
 
   // THIS IS TO EDIT THE PREVIEW QUIZ QUESTION
@@ -238,14 +282,13 @@ function AddCourse() {
   // THIS IS TO EDIT THE EXISTING QUIZ QUESTION
   const handleEditQuizQuestionDisplay = (question) => {
     // Set the selected quiz question for editing
-    setEditQuizQuestion(question);
+    setSelectedQuizQuestion(question);
     // Set the addQuizQuestionClicked flag to false to hide the add form
     setAddQuizQuestionClicked(false);
     // Populate the quiz question form fields with the selected quiz question data
     setQuizQuestion(question);
     // Clear the edited question index
-    setEditedQuestionIndex(null);
-    setQuizQuestionsDisplay([]);
+    setEditedQuestionIndex(question);
   };
   // THIS IS TO DISPLAY THE QUIZ QUESTIONS
   const [quizQuestionsDisplay, setQuizQuestionsDisplay] = useState([]);
@@ -322,6 +365,31 @@ function AddCourse() {
       .catch((error) => console.error("Error fetching courses:", error));
   }, []);
   // End
+  const [editedSubmit, setEditedSubmit] = useState(false);
+  const handleUpdateQuizQuestion = () => {
+    // Update the existing quiz question in the array
+    const updatedQuestions = [...quizQuestionsDisplay];
+    const updatedIndex = updatedQuestions.findIndex(
+      (question) => question.id === selectedQuizQuestion.id
+    );
+
+    if (updatedIndex !== -1) {
+      updatedQuestions[updatedIndex] = quizQuestion;
+      setQuizQuestionsDisplay(updatedQuestions);
+      setQuizQuestions(updatedQuestions);
+      setEditedSubmit(true);
+      // Clear the selected quiz question and form fields
+      setSelectedQuizQuestion(false);
+      setQuizQuestion({
+        question: "",
+        choices: ["", "", "", ""],
+        correctAnswer: "",
+      });
+      // Set the addQuizQuestionClicked flag to true to show the add form
+      setAddQuizQuestionClicked(true);
+    }
+  };
+
   return (
     <>
       <div className="container-fluid adminDashWrapper">
@@ -664,7 +732,7 @@ function AddCourse() {
                     </button>
                   )}
                   {/* Display added quiz questions */}
-                  <div>
+                  <div className="contentBorder mt-2">
                     {quizQuestionsDisplay.length > 0 ? (
                       quizQuestionsDisplay.map((question, index) => (
                         <div key={index}>
@@ -677,13 +745,22 @@ function AddCourse() {
                             }: ${choice}`}</p>
                           ))}
                           <p>Correct Answer: {question.correctAnswer}</p>
-                          <button
+                          {/* <button
+                            className="btn courseBtn"
                             onClick={() =>
                               handleEditQuizQuestionDisplay(question)
                             }
                           >
                             Edit
-                          </button>
+                          </button> */}
+                          {editedSubmit && (
+                            <button
+                              className="btn courseBtn ms-2"
+                              onClick={handleSubmitQuiz}
+                            >
+                              Submit Quiz Questions
+                            </button>
+                          )}
                         </div>
                       ))
                     ) : (
@@ -743,7 +820,7 @@ function AddCourse() {
                 </Modal.Header>
                 <Modal.Body>Are you sure you want to logout?</Modal.Body>
                 <Modal.Footer>
-                  <Button variant="success" onClick={handleLogout}>
+                  <Button variant="danger" onClick={handleLogout}>
                     Logout
                   </Button>
                   <Button

@@ -42,11 +42,9 @@ function Login() {
             switch (res.data.role) {
               case "student":
                 navigate("/studentDash");
-                sessionStorage.setItem("username", res.data.username);
                 break;
               case "teacher":
                 navigate("/teacherDash");
-                sessionStorage.setItem("username", res.data.username);
                 break;
               case "admin":
                 navigate("/admin");
@@ -134,7 +132,7 @@ function Login() {
               {/* Image icon */}
               {/* <img src="assets/car-icon.png" alt=""/> */}
               <div className="text">
-                <h3 className="text-black">Welcome Back!</h3>
+                <h3 className="text-black ">Welcome Back!</h3>
               </div>
               <div className="qoute">
                 <h3 className="text-black">

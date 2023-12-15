@@ -18,6 +18,12 @@ import {
 import javaIcon2 from "./icons/javaIcon2.jpg";
 
 function StudentJavaDash() {
+  useEffect(() => {
+    document.title = "CodePulse | Java";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const handleCourseClick = (course) => {
@@ -134,6 +140,12 @@ function StudentJavaDash() {
                   </div>
                   <button className="takeQuizBtn btn" onClick={handleShowQuiz}>
                     Ready to take the Quiz?
+                  </button>
+                  <button
+                    className="takeQuizBtn btn ms-2"
+                    onClick={handleShowQuiz}
+                  >
+                    Practice Coding
                   </button>
                 </div>
               )}

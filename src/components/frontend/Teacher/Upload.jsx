@@ -1,10 +1,16 @@
 //C:\react-js\my-app\src\App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 function App() {
+  useEffect(() => {
+    document.title = "CodePulse | Upload Files";
+    return () => {
+      // Cleanup, if necessary
+    };
+  }, []);
   const [title, setTitle] = useState("");
   const [file, setFile] = useState();
   const [msg, setMsg] = useState("");
